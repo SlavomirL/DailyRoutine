@@ -16,12 +16,10 @@ public class RegistrationServiceImpl implements RegistrationService {
   private final ParentRepository parentRepository;
 
   public Optional<Parent> registerNewParent(RegisterRequestDTO registerDto) {
-    System.out.println("validation passed");
     Parent parent =
         Parent.builder()
             .firstName(registerDto.getFirstName())
             .surname(registerDto.getSurname())
-            //                    .password(passwordEncoder.encode(registerDto.getPassword()))
             .password(registerDto.getPassword())
             .email(registerDto.getEmail())
             .build();
