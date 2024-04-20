@@ -1,10 +1,11 @@
 package com.slavomirlobotka.dailyroutineforkids.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
-import javax.validation.constraints.NotNull;
+
 
 @Data
 @RequiredArgsConstructor
