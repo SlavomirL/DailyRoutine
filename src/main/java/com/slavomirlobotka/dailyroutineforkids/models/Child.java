@@ -1,11 +1,10 @@
 package com.slavomirlobotka.dailyroutineforkids.models;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import java.util.List;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-
-import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @Data
 @RequiredArgsConstructor
@@ -16,7 +15,7 @@ public class Child {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
+    @NotBlank(message = "Name is mandatory")
     private String name;
 
     private Integer age;
