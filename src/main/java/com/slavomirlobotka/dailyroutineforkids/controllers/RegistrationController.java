@@ -19,7 +19,6 @@ public class RegistrationController {
   public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequestDTO registerRequestDTO) {
     registrationService.registerNewParent(registerRequestDTO);
 
-//    return ResponseEntity.ok("Parent " + registerRequestDTO.getFirstName() + " " + registerRequestDTO.getSurname() + " is now registered");
     return ResponseEntity.ok(String.format("Parent %s %s is now successfully registered.", registerRequestDTO.getFirstName(), registerRequestDTO.getSurname()));
   }
 }
