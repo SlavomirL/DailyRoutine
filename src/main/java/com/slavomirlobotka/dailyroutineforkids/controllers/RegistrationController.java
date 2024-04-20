@@ -13,14 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class RegistrationController {
 
-    private final RegistrationService registrationService;
+  private final RegistrationService registrationService;
 
-    @PostMapping("/users")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequestDTO registerRequestDTO) {
-        registrationService.registerNewParent(registerRequestDTO);
+  @PostMapping("/users")
+  public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequestDTO registerRequestDTO) {
+    registrationService.registerNewParent(registerRequestDTO);
 
-        return ResponseEntity.ok("User is valid");
-    }
-
-
+    return ResponseEntity.ok("User is valid");
+  }
 }
