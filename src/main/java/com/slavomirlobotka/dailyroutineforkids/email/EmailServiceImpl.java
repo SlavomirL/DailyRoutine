@@ -17,7 +17,7 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 public class EmailServiceImpl implements EmailService {
 
   private final SpringTemplateEngine templateEngine;
-  private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
+
 
   private final String emailFrom = System.getenv("DAILY_ROUTINE_EMAIL_FROM");
   private final String apiKey = System.getenv("DAILY_ROUTINE_SENDGRID_API_KEY");
@@ -40,10 +40,13 @@ public class EmailServiceImpl implements EmailService {
       request.setEndpoint("mail/send");
       request.setBody(mail.build());
       Response response = sg.api(request);
-      logger.info("Email sent with status: " + response.getStatusCode());
+      System.out.println("Attempt to send email to: " + emailTo + " with response: " + response.getStatusCode() + " - " + response.getBody());
+      System.out.println("response = " + response);
+      System.out.println("response.getBody() = " + response.getBody());
       return response.getBody();
     } catch (IOException ex) {
-      logger.error("Failed to send email", ex);
+      System.out.println("Failed to send email to: " + emailTo);
+      System.out.println(ex);
       throw ex;
     }
   }
