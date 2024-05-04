@@ -3,6 +3,6 @@ package com.slavomirlobotka.dailyroutineforkids.repositories;
 import com.slavomirlobotka.dailyroutineforkids.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ParentRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
   User findByEmail(String email);
 }

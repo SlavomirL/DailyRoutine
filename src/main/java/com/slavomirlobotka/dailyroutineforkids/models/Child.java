@@ -11,21 +11,19 @@ import lombok.RequiredArgsConstructor;
 @Entity
 public class Child {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @NotBlank(message = "Name is mandatory")
-    private String name;
+  @NotBlank(message = "Name is mandatory")
+  private String name;
 
-    private Integer age;
+  private Integer age;
 
-    private String gender;
+  private String gender;
 
-    @ManyToOne
-    private Parent parent;
+  @ManyToOne private User user;
 
-    @OneToMany(mappedBy = "child", cascade = CascadeType.ALL)
-    private List<Schedule> schedules;
-
+  @OneToMany(mappedBy = "child", cascade = CascadeType.ALL)
+  private List<Schedule> schedules;
 }
