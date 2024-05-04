@@ -19,6 +19,7 @@ public class EmailController {
   @GetMapping("/users/verify")
   public String verificationPage(@RequestParam("email") String email, Model model) {
     model.addAttribute("email", email);
+
     return "verification-page";
   }
 

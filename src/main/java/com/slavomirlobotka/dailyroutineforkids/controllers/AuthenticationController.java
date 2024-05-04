@@ -33,6 +33,7 @@ public class AuthenticationController {
         || loginRequestDTO.getFirstName() == null
         || loginRequestDTO.getPassword() == null
         || loginRequestDTO.getEmail() == null) {
+
       return ResponseEntity.badRequest().build();
     }
 

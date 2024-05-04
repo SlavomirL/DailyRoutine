@@ -64,6 +64,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             .user(user)
             .build();
     tokenRepository.save(token);
+
     return generatedToken;
   }
 
@@ -76,16 +77,21 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       int randomIndex = secureRandom.nextInt(characters.length());
       codeBuilder.append(characters.charAt(randomIndex));
     }
+
     return codeBuilder.toString();
   }
 
   @Override
   public boolean verifyUserCode(String code, String email) throws Exception {
     User user = userRepository.findByEmail(email);
-    EmailConfirmationToken token = tokenRepository.findByToken(code);
     if (user == null) {
       throw new Exception("User not found.");
     }
+    if (user.isEnabled()) {
+      throw new Exception("Email already verified and user enabled.");
+    }
+
+    EmailConfirmationToken token = tokenRepository.findByToken(code);
     if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
       throw new Exception("Code expired.");
     }
@@ -97,6 +103,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     user.setEnabled(true);
     userRepository.save(user);
     tokenRepository.save(token);
+
     return true;
   }
 
@@ -109,6 +116,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                   loginRequestDTO.getEmail(), loginRequestDTO.getPassword()));
       SecurityContextHolder.getContext().setAuthentication(authentication);
       String jwtToken = jwtService.generateToken(authentication);
+
       return AuthenticationResponseDto.builder().token(jwtToken).build();
     } else {
       throw new Exception("you have to verify your email first");
@@ -118,6 +126,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   @Override
   public boolean isUserEnabled(String email) {
     User user = userRepository.findByEmail(email);
+
     return user.isEnabled();
   }
 }
