@@ -1,6 +1,6 @@
 package com.slavomirlobotka.dailyroutineforkids.models;
 
-import com.slavomirlobotka.dailyroutineforkids.models.roles.Role;
+import com.slavomirlobotka.dailyroutineforkids.models.roles.RoleEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -43,7 +43,10 @@ public class Parent {
   @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
   private List<Child> children;
 
-  @ManyToOne
-  @JoinColumn(name = "role_id")
-  private Role role;
+//  @ManyToOne
+//  @JoinColumn(name = "role_id")
+//  private Role role;
+
+  @Enumerated(EnumType.STRING)
+  private RoleEnum role;
 }
