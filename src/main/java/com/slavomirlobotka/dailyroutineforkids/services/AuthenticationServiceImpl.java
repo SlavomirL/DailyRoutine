@@ -7,76 +7,61 @@ import com.slavomirlobotka.dailyroutineforkids.dtos.RegisterRequestDTO;
 import com.slavomirlobotka.dailyroutineforkids.email.EmailConfirmationToken;
 import com.slavomirlobotka.dailyroutineforkids.email.EmailConfirmationTokenRepository;
 import com.slavomirlobotka.dailyroutineforkids.email.EmailService;
-import com.slavomirlobotka.dailyroutineforkids.models.Parent;
-import com.slavomirlobotka.dailyroutineforkids.models.roles.Role;
-import com.slavomirlobotka.dailyroutineforkids.models.roles.RoleUser;
-import com.slavomirlobotka.dailyroutineforkids.repositories.ParentRepository;
-import org.springframework.security.authentication.AuthenticationManager;
+import com.slavomirlobotka.dailyroutineforkids.models.User;
+import com.slavomirlobotka.dailyroutineforkids.models.roles.RoleEnum;
+import com.slavomirlobotka.dailyroutineforkids.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Optional;
-
-import com.slavomirlobotka.dailyroutineforkids.repositories.RoleRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 @Validated
 @RequiredArgsConstructor
 public class AuthenticationServiceImpl implements AuthenticationService {
 
-  private final ParentRepository parentRepository;
+  private final UserRepository userRepository;
   private final EmailConfirmationTokenRepository tokenRepository;
-  private final RoleRepository roleRepository;
   private final EmailService emailService;
   private final PasswordEncoder passwordEncoder;
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
   private static final int ACTIVATION_CODE_LENGTH = 6;
 
+  @Transactional
   @Override
   public void registerNewParent(RegisterRequestDTO registerDto) throws Exception {
-    Parent parent =
-        Parent.builder()
+    User user =
+        User.builder()
             .firstName(registerDto.getFirstName())
             .surname(registerDto.getSurname())
             .email(registerDto.getEmail())
             .password(passwordEncoder.encode(registerDto.getPassword()))
             .enabled(false)
+            .role(RoleEnum.PARENT)
             .build();
 
-    Optional<Role> roleOptional = roleRepository.findByNameIgnoreCase("user");
-
-    if (roleOptional.isPresent()) {
-      parent.setRole(roleOptional.get());
-    } else {
-      RoleUser user = new RoleUser();
-      System.out.println("user.getName() = " + user.getName());
-      roleRepository.save(user);
-      parent.setRole(user);
-    }
-
-    parentRepository.save(parent);
-    var newToken = generateAndSaveActivationToken(parent);
-    System.out.println("send email is run");
-    System.out.println("newToken = " + newToken);
-    emailService.sendEmail(parent.getEmail(), parent.getFirstName(), newToken);
+    userRepository.save(user);
+    var newToken = generateAndSaveActivationToken(user);
+    emailService.sendEmail(user.getEmail(), user.getFirstName(), newToken);
   }
 
   @Override
-  public String generateAndSaveActivationToken(Parent parent) {
+  public String generateAndSaveActivationToken(User user) {
     String generatedToken = generateActivationCode(ACTIVATION_CODE_LENGTH);
     var token =
         EmailConfirmationToken.builder()
             .token(generatedToken)
             .createdAt(LocalDateTime.now())
             .expiresAt(LocalDateTime.now().plusMinutes(10))
-            .parent(parent)
+            .user(user)
             .build();
     tokenRepository.save(token);
     return generatedToken;
@@ -95,32 +80,44 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   }
 
   @Override
-  public boolean verifyUserCode(String code) throws Exception {
-    //    Parent parent = parentRepository.findByEmail(email);
+  public boolean verifyUserCode(String code, String email) throws Exception {
+    User user = userRepository.findByEmail(email);
     EmailConfirmationToken token = tokenRepository.findByToken(code);
-    //    if (parent == null) {
-    //      throw new Exception("User not found.");
-    //    }
+    if (user == null) {
+      throw new Exception("User not found.");
+    }
     if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
       throw new Exception("Code expired.");
     }
     if (!token.getToken().equals(code)) {
       throw new Exception("Invalid verification code.");
     }
-    //    parent.setEnabled(true);
+
     token.setValidatedAt(LocalDateTime.now());
-    //    parentRepository.save(parent);
+    user.setEnabled(true);
+    userRepository.save(user);
     tokenRepository.save(token);
     return true;
   }
 
   @Override
-  public AuthenticationResponseDto authenticate(LoginRequestDTO loginRequestDTO) {
-    Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequestDTO.getEmail(), loginRequestDTO.getPassword()));
-    SecurityContextHolder.getContext().setAuthentication(authentication);
-    String jwtToken = jwtService.generateToken(authentication);
-    return AuthenticationResponseDto.builder()
-            .token(jwtToken)
-            .build();
+  public AuthenticationResponseDto authenticate(LoginRequestDTO loginRequestDTO) throws Exception {
+    if (isUserEnabled(loginRequestDTO.getEmail())) {
+      Authentication authentication =
+          authenticationManager.authenticate(
+              new UsernamePasswordAuthenticationToken(
+                  loginRequestDTO.getEmail(), loginRequestDTO.getPassword()));
+      SecurityContextHolder.getContext().setAuthentication(authentication);
+      String jwtToken = jwtService.generateToken(authentication);
+      return AuthenticationResponseDto.builder().token(jwtToken).build();
+    } else {
+      throw new Exception("you have to verify your email first");
+    }
+  }
+
+  @Override
+  public boolean isUserEnabled(String email) {
+    User user = userRepository.findByEmail(email);
+    return user.isEnabled();
   }
 }

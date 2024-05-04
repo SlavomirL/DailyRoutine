@@ -1,6 +1,6 @@
 package com.slavomirlobotka.dailyroutineforkids.email;
 
-import com.slavomirlobotka.dailyroutineforkids.models.Parent;
+import com.slavomirlobotka.dailyroutineforkids.models.User;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import lombok.*;
@@ -24,5 +24,5 @@ public class EmailConfirmationToken {
 
   @ManyToOne
   @JoinColumn(name = "parent_id", nullable = false)
-  private Parent parent;
+  private User user;
 }

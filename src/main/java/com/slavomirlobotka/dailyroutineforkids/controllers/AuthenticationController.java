@@ -4,9 +4,6 @@ import com.slavomirlobotka.dailyroutineforkids.dtos.LoginRequestDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.RegisterRequestDTO;
 import com.slavomirlobotka.dailyroutineforkids.services.AuthenticationService;
 import jakarta.validation.Valid;
-import java.io.IOException;
-import java.time.LocalDateTime;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,13 +27,14 @@ public class AuthenticationController {
   }
 
   @PostMapping("/users/login")
-  public ResponseEntity<?> userLogin(LoginRequestDTO loginRequestDTO) {
-    if(loginRequestDTO == null || loginRequestDTO.getPassword() == null || loginRequestDTO.getEmail() == null) {
+  public ResponseEntity<?> userLogin(@RequestBody LoginRequestDTO loginRequestDTO)
+      throws Exception {
+    if (loginRequestDTO == null
+        || loginRequestDTO.getFirstName() == null
+        || loginRequestDTO.getPassword() == null
+        || loginRequestDTO.getEmail() == null) {
       return ResponseEntity.badRequest().build();
     }
-
-//    authenticationService.authenticate(loginRequestDTO);
-//    return ResponseEntity.ok("Login of user " + loginRequestDTO.getFirstName() + " successful");
 
     return ResponseEntity.ok(authenticationService.authenticate(loginRequestDTO));
   }
