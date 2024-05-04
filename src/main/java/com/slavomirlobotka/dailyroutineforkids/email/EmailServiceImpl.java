@@ -15,7 +15,6 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 public class EmailServiceImpl implements EmailService {
 
   private final SpringTemplateEngine templateEngine;
-
   private final String emailFrom = System.getenv("DAILY_ROUTINE_EMAIL_FROM");
   private final String apiKey = System.getenv("DAILY_ROUTINE_SENDGRID_API_KEY");
   private final String emailVerificationLink =
@@ -37,9 +36,9 @@ public class EmailServiceImpl implements EmailService {
       request.setEndpoint("mail/send");
       request.setBody(mail.build());
       Response response = sg.api(request);
+
       return response.getBody();
     } catch (IOException ex) {
-      System.out.println("Failed to send email to: " + emailTo);
       System.out.println(ex);
       throw ex;
     }
@@ -51,6 +50,7 @@ public class EmailServiceImpl implements EmailService {
     context.setVariable("username", username);
     context.setVariable("activation_code", digitToken);
     context.setVariable("confirmationUrl", buildVerificationLink(email));
+
     return templateEngine.process(EmailTemplateName.ACTIVATE_ACCOUNT.getName(), context);
   }
 
