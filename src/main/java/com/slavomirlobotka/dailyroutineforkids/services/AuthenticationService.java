@@ -1,16 +1,21 @@
 package com.slavomirlobotka.dailyroutineforkids.services;
 
+import com.slavomirlobotka.dailyroutineforkids.dtos.AuthenticationResponseDto;
+import com.slavomirlobotka.dailyroutineforkids.dtos.LoginRequestDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.RegisterRequestDTO;
-import com.slavomirlobotka.dailyroutineforkids.models.Parent;
-import java.io.IOException;
+import com.slavomirlobotka.dailyroutineforkids.models.User;
 
 public interface AuthenticationService {
 
-  void registerNewParent(RegisterRequestDTO registerRequestDTO) throws IOException;
+  void registerNewParent(RegisterRequestDTO registerRequestDTO) throws Exception;
 
-  String generateAndSaveActivationToken(Parent parent);
+  String generateAndSaveActivationToken(User user);
 
   String generateActivationCode(int length);
 
-  boolean verifyUserCode(String code) throws Exception;
+  boolean verifyUserCode(String code, String email) throws Exception;
+
+  AuthenticationResponseDto authenticate(LoginRequestDTO loginRequestDTO) throws Exception;
+
+  boolean isUserEnabled(String email);
 }

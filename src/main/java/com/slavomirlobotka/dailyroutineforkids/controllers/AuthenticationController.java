@@ -1,9 +1,9 @@
 package com.slavomirlobotka.dailyroutineforkids.controllers;
 
+import com.slavomirlobotka.dailyroutineforkids.dtos.LoginRequestDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.RegisterRequestDTO;
 import com.slavomirlobotka.dailyroutineforkids.services.AuthenticationService;
 import jakarta.validation.Valid;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +16,7 @@ public class AuthenticationController {
 
   @PostMapping("/users/register")
   public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequestDTO registerRequestDTO)
-      throws IOException {
+      throws Exception {
     authenticationService.registerNewParent(registerRequestDTO);
 
     return ResponseEntity.accepted()
@@ -24,5 +24,19 @@ public class AuthenticationController {
             String.format(
                 "Dear %s %s, to complete your registration, please visit your email to verify it.",
                 registerRequestDTO.getFirstName(), registerRequestDTO.getSurname()));
+  }
+
+  @PostMapping("/users/login")
+  public ResponseEntity<?> userLogin(@RequestBody LoginRequestDTO loginRequestDTO)
+      throws Exception {
+    if (loginRequestDTO == null
+        || loginRequestDTO.getFirstName() == null
+        || loginRequestDTO.getPassword() == null
+        || loginRequestDTO.getEmail() == null) {
+
+      return ResponseEntity.badRequest().build();
+    }
+
+    return ResponseEntity.ok(authenticationService.authenticate(loginRequestDTO));
   }
 }

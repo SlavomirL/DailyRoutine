@@ -1,11 +1,10 @@
 package com.slavomirlobotka.dailyroutineforkids.models;
 
-import com.slavomirlobotka.dailyroutineforkids.models.roles.Role;
+import com.slavomirlobotka.dailyroutineforkids.models.roles.RoleEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-
 import java.util.List;
 import lombok.*;
 
@@ -14,7 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Builder
-public class Parent {
+public class User {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,10 +39,9 @@ public class Parent {
 
   private boolean enabled;
 
-  @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   private List<Child> children;
 
-  @ManyToOne
-  @JoinColumn(name = "role_id")
-  private Role role;
+  @Enumerated(EnumType.STRING)
+  private RoleEnum role;
 }

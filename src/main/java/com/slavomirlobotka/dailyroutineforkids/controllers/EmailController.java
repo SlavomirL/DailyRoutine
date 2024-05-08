@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,22 +17,25 @@ public class EmailController {
   private final AuthenticationService authenticationService;
 
   @GetMapping("/users/verify")
-  public String verificationPage() {
+  public String verificationPage(@RequestParam("email") String email, Model model) {
+    model.addAttribute("email", email);
+
     return "verification-page";
   }
 
   @PostMapping("/users/verify")
-  public ResponseEntity<String> verifyUser(@RequestParam("code") String code) {
+  public ResponseEntity<?> verifyUser(
+      @RequestParam("code") String code, @RequestParam("email") String email) {
+
     try {
-      boolean isVerified = authenticationService.verifyUserCode(code);
+      boolean isVerified = authenticationService.verifyUserCode(code, email);
       if (isVerified) {
-        return ResponseEntity.ok("Email successfully verified.");
+        return ResponseEntity.ok("Account successfully verified.");
       } else {
-        return ResponseEntity.badRequest()
-            .body("Verification failed: Invalid code or code expired.");
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid code or email.");
       }
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred.");
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
   }
 }
