@@ -13,6 +13,7 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Builder
+@ToString(exclude = "children")
 public class User {
 
   @Id
