@@ -3,12 +3,14 @@ package com.slavomirlobotka.dailyroutineforkids.models;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 @Data
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
+@Builder
+@ToString(exclude = "user")
 public class Child {
 
   @Id
