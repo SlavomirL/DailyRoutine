@@ -1,7 +1,7 @@
 package com.slavomirlobotka.dailyroutineforkids.services;
 
 import com.slavomirlobotka.dailyroutineforkids.config.JwtService;
-import com.slavomirlobotka.dailyroutineforkids.dtos.AuthenticationResponseDto;
+import com.slavomirlobotka.dailyroutineforkids.dtos.AuthenticationResponseDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.LoginRequestDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.RegisterRequestDTO;
 import com.slavomirlobotka.dailyroutineforkids.email.EmailConfirmationToken;
@@ -108,7 +108,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   }
 
   @Override
-  public AuthenticationResponseDto authenticate(LoginRequestDTO loginRequestDTO) throws Exception {
+  public AuthenticationResponseDTO authenticate(LoginRequestDTO loginRequestDTO) throws Exception {
     if (isUserEnabled(loginRequestDTO.getEmail())) {
       Authentication authentication =
           authenticationManager.authenticate(
@@ -117,7 +117,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       SecurityContextHolder.getContext().setAuthentication(authentication);
       String jwtToken = jwtService.generateToken(authentication);
 
-      return AuthenticationResponseDto.builder().token(jwtToken).build();
+      return AuthenticationResponseDTO.builder().token(jwtToken).build();
     } else {
       throw new Exception("you have to verify your email first");
     }
