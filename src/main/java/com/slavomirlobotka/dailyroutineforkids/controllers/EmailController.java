@@ -1,8 +1,8 @@
 package com.slavomirlobotka.dailyroutineforkids.controllers;
 
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
 import com.slavomirlobotka.dailyroutineforkids.services.AuthenticationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,17 +25,14 @@ public class EmailController {
 
   @PostMapping("/users/verify")
   public ResponseEntity<?> verifyUser(
-      @RequestParam("code") String code, @RequestParam("email") String email) {
+      @RequestParam("code") String code, @RequestParam("email") String email)
+      throws DailyRoutineBadRequest {
 
-    try {
-      boolean isVerified = authenticationService.verifyUserCode(code, email);
-      if (isVerified) {
-        return ResponseEntity.ok("Account successfully verified.");
-      } else {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid code or email.");
-      }
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+    boolean isVerified = authenticationService.verifyUserCode(code, email);
+    if (isVerified) {
+      return ResponseEntity.ok("Account successfully verified.");
+    } else {
+      throw new DailyRoutineBadRequest("Invalid code or email.");
     }
   }
 }

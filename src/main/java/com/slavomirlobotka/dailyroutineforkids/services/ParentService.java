@@ -3,6 +3,7 @@ package com.slavomirlobotka.dailyroutineforkids.services;
 import com.slavomirlobotka.dailyroutineforkids.dtos.DisplayChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.RegisterChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.UpdateChildDTO;
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.User;
 import java.util.List;
 
@@ -14,7 +15,7 @@ public interface ParentService {
 
   User getCurrentParent();
 
-  DisplayChildDTO updateChild(Long id, UpdateChildDTO updateChildDTO) throws Exception;
+  DisplayChildDTO updateChild(Long id, UpdateChildDTO updateChildDTO) throws DailyRoutineNotFound;
 
-  void removeChild(Long id) throws Exception;
+  void removeChild(Long id) throws DailyRoutineNotFound;
 }

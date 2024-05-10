@@ -1,10 +1,10 @@
 package com.slavomirlobotka.dailyroutineforkids.email;
 
-import java.io.IOException;
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineIO;
 
 public interface EmailService {
 
-  String sendEmail(String emailTo, String firstName, String digitToken) throws IOException;
+  void sendEmail(String emailTo, String firstName, String digitToken) throws DailyRoutineIO;
 
   String buildEmailContent(String username, String email, String digitToken);
 
