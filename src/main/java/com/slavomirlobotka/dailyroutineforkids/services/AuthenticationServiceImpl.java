@@ -8,6 +8,8 @@ import com.slavomirlobotka.dailyroutineforkids.email.EmailConfirmationToken;
 import com.slavomirlobotka.dailyroutineforkids.email.EmailConfirmationTokenRepository;
 import com.slavomirlobotka.dailyroutineforkids.email.EmailService;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineIO;
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineUnauthorized;
 import com.slavomirlobotka.dailyroutineforkids.models.User;
 import com.slavomirlobotka.dailyroutineforkids.models.roles.RoleEnum;
 import com.slavomirlobotka.dailyroutineforkids.repositories.UserRepository;
@@ -38,7 +40,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
   @Transactional
   @Override
-  public void registerNewParent(RegisterRequestDTO registerDto) throws Exception {
+  public void registerNewParent(RegisterRequestDTO registerDto) throws DailyRoutineIO {
     User user =
         User.builder()
             .firstName(registerDto.getFirstName())
@@ -84,7 +86,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
   @Override
   public boolean verifyUserCode(String code, String email) throws DailyRoutineBadRequest {
-    System.out.println("code = " + code);
     User user = userRepository.findByEmail(email);
     if (user == null) {
       throw new DailyRoutineBadRequest("User not found.");
@@ -94,7 +95,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     EmailConfirmationToken token = tokenRepository.findByToken(code);
-
     if (token == null) {
       throw new DailyRoutineBadRequest("Invalid verification code.");
     } else {
@@ -112,7 +112,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   }
 
   @Override
-  public AuthenticationResponseDTO authenticate(LoginRequestDTO loginRequestDTO) throws Exception {
+  public AuthenticationResponseDTO authenticate(LoginRequestDTO loginRequestDTO)
+      throws DailyRoutineUnauthorized {
     if (isUserEnabled(loginRequestDTO.getEmail())) {
       Authentication authentication =
           authenticationManager.authenticate(
@@ -123,7 +124,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
       return AuthenticationResponseDTO.builder().token(jwtToken).build();
     } else {
-      throw new Exception("you have to verify your email first");
+      throw new DailyRoutineUnauthorized("you have to verify your email first");
     }
   }
 

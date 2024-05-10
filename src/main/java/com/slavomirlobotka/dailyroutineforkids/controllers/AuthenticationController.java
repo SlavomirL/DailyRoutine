@@ -2,6 +2,8 @@ package com.slavomirlobotka.dailyroutineforkids.controllers;
 
 import com.slavomirlobotka.dailyroutineforkids.dtos.LoginRequestDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.RegisterRequestDTO;
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineIO;
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineUnauthorized;
 import com.slavomirlobotka.dailyroutineforkids.services.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +18,7 @@ public class AuthenticationController {
 
   @PostMapping("/users/register")
   public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequestDTO registerRequestDTO)
-      throws Exception {
+      throws DailyRoutineIO {
     authenticationService.registerNewParent(registerRequestDTO);
 
     return ResponseEntity.accepted()
@@ -28,7 +30,7 @@ public class AuthenticationController {
 
   @PostMapping("/users/login")
   public ResponseEntity<?> userLogin(@RequestBody LoginRequestDTO loginRequestDTO)
-      throws Exception {
+      throws DailyRoutineUnauthorized {
     if (loginRequestDTO == null
         || loginRequestDTO.getFirstName() == null
         || loginRequestDTO.getPassword() == null

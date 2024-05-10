@@ -4,6 +4,7 @@ import com.sendgrid.*;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineIO;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ public class EmailServiceImpl implements EmailService {
       System.getenv("DAILY_ROUTINE_EMAIL_CONFIRMATION_LINK");
 
   @Override
-  public String sendEmail(String emailTo, String firstName, String digitToken) throws IOException {
+  public void sendEmail(String emailTo, String firstName, String digitToken) throws DailyRoutineIO {
     Email from = new Email(emailFrom);
     String subject = "Complete your registration with Daily Routine";
     Email to = new Email(emailTo);
@@ -37,10 +38,8 @@ public class EmailServiceImpl implements EmailService {
       request.setBody(mail.build());
       Response response = sg.api(request);
 
-      return response.getBody();
     } catch (IOException ex) {
-      System.out.println(ex);
-      throw ex;
+      throw new DailyRoutineIO("Mail could not be sent");
     }
   }
 
