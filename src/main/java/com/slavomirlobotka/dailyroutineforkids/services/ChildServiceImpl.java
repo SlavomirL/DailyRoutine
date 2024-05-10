@@ -12,20 +12,25 @@ import org.springframework.stereotype.Service;
 public class ChildServiceImpl implements ChildService {
 
   @Override
-  public List<DisplayChildDTO> convertToDto(List<Child> children) {
+  public List<DisplayChildDTO> convertAllToDto(List<Child> children) {
     List<DisplayChildDTO> result = new ArrayList<>();
     for (Child ch : children) {
-      DisplayChildDTO chDto =
-          DisplayChildDTO.builder()
-              .id(ch.getId())
-              .name(ch.getName())
-              .age(ch.getAge())
-              .gender(ch.getGender())
-              .schedules(ch.getSchedules())
-              .build();
+      DisplayChildDTO chDto = convertSingleToDto(ch);
       result.add(chDto);
     }
 
     return result;
+  }
+
+  @Override
+  public DisplayChildDTO convertSingleToDto(Child child) {
+
+    return DisplayChildDTO.builder()
+        .id(child.getId())
+        .name(child.getName())
+        .age(child.getAge())
+        .gender(child.getGender())
+        .schedules(child.getSchedules())
+        .build();
   }
 }

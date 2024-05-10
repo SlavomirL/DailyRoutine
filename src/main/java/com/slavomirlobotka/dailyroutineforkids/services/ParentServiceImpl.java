@@ -2,6 +2,7 @@ package com.slavomirlobotka.dailyroutineforkids.services;
 
 import com.slavomirlobotka.dailyroutineforkids.dtos.DisplayChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.RegisterChildDTO;
+import com.slavomirlobotka.dailyroutineforkids.dtos.UpdateChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.models.Child;
 import com.slavomirlobotka.dailyroutineforkids.models.User;
 import com.slavomirlobotka.dailyroutineforkids.repositories.ChildRepository;
@@ -12,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -41,7 +43,7 @@ public class ParentServiceImpl implements ParentService {
   public List<DisplayChildDTO> getAllChildren() {
     User user = getCurrentParent();
 
-    return childService.convertToDto(user.getChildren());
+    return childService.convertAllToDto(user.getChildren());
   }
 
   @Override
@@ -50,5 +52,28 @@ public class ParentServiceImpl implements ParentService {
     String email = authentication.getName();
 
     return userRepository.findByEmail(email);
+  }
+
+  @Override
+  public DisplayChildDTO updateChild(Long id, UpdateChildDTO updateChildDTO) throws Exception {
+    Optional<Child> childOpt = childRepository.findById(id);
+    if (childOpt.isEmpty()) {
+      throw new Exception("No child with ID " + id + " found");
+    }
+
+    Child child = childOpt.get();
+
+    if (updateChildDTO.getName() != null) {
+      child.setName(updateChildDTO.getName());
+    }
+    if (updateChildDTO.getAge() != null) {
+      child.setAge(updateChildDTO.getAge());
+    }
+    if (updateChildDTO.getGender() != null) {
+      child.setGender(updateChildDTO.getGender());
+    }
+    childRepository.save(child);
+
+    return childService.convertSingleToDto(child);
   }
 }
