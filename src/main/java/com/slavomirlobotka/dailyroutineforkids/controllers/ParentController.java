@@ -2,6 +2,7 @@ package com.slavomirlobotka.dailyroutineforkids.controllers;
 
 import com.slavomirlobotka.dailyroutineforkids.dtos.DisplayChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.RegisterChildDTO;
+import com.slavomirlobotka.dailyroutineforkids.dtos.UpdateChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.services.ParentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -34,5 +35,14 @@ public class ParentController {
     }
 
     throw new Exception("No children found");
+  }
+
+  @PatchMapping("/parent/child/{id}")
+  public ResponseEntity<?> updateChildData(
+      @PathVariable Long id, @RequestBody(required = false) UpdateChildDTO updateChildDTO)
+      throws Exception {
+    DisplayChildDTO child = parentService.updateChild(id, updateChildDTO);
+
+    return ResponseEntity.ok(child);
   }
 }
