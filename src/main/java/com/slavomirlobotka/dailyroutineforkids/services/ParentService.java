@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ParentService {
 
-  void createChild(String childName, RegisterChildDTO registerChildDTO);
+  Long createChild(String childName, RegisterChildDTO registerChildDTO);
 
   List<DisplayChildDTO> getAllChildren();
 

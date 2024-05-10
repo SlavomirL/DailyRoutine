@@ -23,7 +23,7 @@ public class ParentServiceImpl implements ParentService {
   private final ChildService childService;
 
   @Override
-  public void createChild(String childName, RegisterChildDTO registerChildDTO) {
+  public Long createChild(String childName, RegisterChildDTO registerChildDTO) {
     User user = getCurrentParent();
 
     Child child =
@@ -36,6 +36,8 @@ public class ParentServiceImpl implements ParentService {
 
     user.getChildren().add(child);
     childRepository.save(child);
+
+    return child.getId();
   }
 
   @Override

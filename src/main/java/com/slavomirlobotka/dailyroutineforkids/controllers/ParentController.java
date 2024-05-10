@@ -16,13 +16,14 @@ public class ParentController {
   private final ParentService parentService;
 
   @PostMapping("/parent/child/{name}")
-  public void addChild(
+  public ResponseEntity<?> addChild(
       @PathVariable String name, @RequestBody(required = false) RegisterChildDTO registerChildDto) {
     if (registerChildDto == null) {
       registerChildDto = new RegisterChildDTO();
     }
 
-    parentService.createChild(name, registerChildDto);
+    Long id = parentService.createChild(name, registerChildDto);
+    return ResponseEntity.ok("A child " + name + " added to the list with id " + id +".");
   }
 
   @GetMapping("/parent/child/all")
