@@ -7,13 +7,12 @@ import com.slavomirlobotka.dailyroutineforkids.models.Child;
 import com.slavomirlobotka.dailyroutineforkids.models.User;
 import com.slavomirlobotka.dailyroutineforkids.repositories.ChildRepository;
 import com.slavomirlobotka.dailyroutineforkids.repositories.UserRepository;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -24,7 +23,7 @@ public class ParentServiceImpl implements ParentService {
   private final ChildService childService;
 
   @Override
-  public void createChild(String childName, RegisterChildDTO registerChildDTO) {
+  public Long createChild(String childName, RegisterChildDTO registerChildDTO) {
     User user = getCurrentParent();
 
     Child child =
@@ -37,6 +36,8 @@ public class ParentServiceImpl implements ParentService {
 
     user.getChildren().add(child);
     childRepository.save(child);
+
+    return child.getId();
   }
 
   @Override
@@ -75,5 +76,15 @@ public class ParentServiceImpl implements ParentService {
     childRepository.save(child);
 
     return childService.convertSingleToDto(child);
+  }
+
+  @Override
+  public void removeChild(Long id) throws Exception {
+    Optional<Child> childOpt = childRepository.findById(id);
+    if (childOpt.isEmpty()) {
+      throw new Exception("No child with ID " + id + " found");
+    }
+    Child child = childOpt.get();
+    childRepository.delete(child);
   }
 }

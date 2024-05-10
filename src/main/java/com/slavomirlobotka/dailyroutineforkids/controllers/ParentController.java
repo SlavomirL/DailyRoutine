@@ -4,11 +4,10 @@ import com.slavomirlobotka.dailyroutineforkids.dtos.DisplayChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.RegisterChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.UpdateChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.services.ParentService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -17,13 +16,14 @@ public class ParentController {
   private final ParentService parentService;
 
   @PostMapping("/parent/child/{name}")
-  public void addChild(
+  public ResponseEntity<?> addChild(
       @PathVariable String name, @RequestBody(required = false) RegisterChildDTO registerChildDto) {
     if (registerChildDto == null) {
       registerChildDto = new RegisterChildDTO();
     }
 
-    parentService.createChild(name, registerChildDto);
+    Long id = parentService.createChild(name, registerChildDto);
+    return ResponseEntity.ok("A child " + name + " added to the list with id " + id +".");
   }
 
   @GetMapping("/parent/child/all")
@@ -44,5 +44,12 @@ public class ParentController {
     DisplayChildDTO child = parentService.updateChild(id, updateChildDTO);
 
     return ResponseEntity.ok(child);
+  }
+
+  @DeleteMapping("/parent/child/{id}")
+  public ResponseEntity<?> deleteChild(@PathVariable Long id) throws Exception {
+    parentService.removeChild(id);
+
+    return ResponseEntity.ok("Child with id " + id + " has been removed from the list.");
   }
 }
