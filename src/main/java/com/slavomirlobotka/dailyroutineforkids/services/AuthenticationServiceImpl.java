@@ -7,6 +7,7 @@ import com.slavomirlobotka.dailyroutineforkids.dtos.RegisterRequestDTO;
 import com.slavomirlobotka.dailyroutineforkids.email.EmailConfirmationToken;
 import com.slavomirlobotka.dailyroutineforkids.email.EmailConfirmationTokenRepository;
 import com.slavomirlobotka.dailyroutineforkids.email.EmailService;
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
 import com.slavomirlobotka.dailyroutineforkids.models.User;
 import com.slavomirlobotka.dailyroutineforkids.models.roles.RoleEnum;
 import com.slavomirlobotka.dailyroutineforkids.repositories.UserRepository;
@@ -82,21 +83,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
   }
 
   @Override
-  public boolean verifyUserCode(String code, String email) throws Exception {
+  public boolean verifyUserCode(String code, String email) throws DailyRoutineBadRequest {
+    System.out.println("code = " + code);
     User user = userRepository.findByEmail(email);
     if (user == null) {
-      throw new Exception("User not found.");
+      throw new DailyRoutineBadRequest("User not found.");
     }
     if (user.isEnabled()) {
-      throw new Exception("Email already verified and user enabled.");
+      throw new DailyRoutineBadRequest("Email already verified and user enabled.");
     }
 
     EmailConfirmationToken token = tokenRepository.findByToken(code);
-    if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
-      throw new Exception("Code expired.");
-    }
-    if (!token.getToken().equals(code)) {
-      throw new Exception("Invalid verification code.");
+
+    if (token == null) {
+      throw new DailyRoutineBadRequest("Invalid verification code.");
+    } else {
+      if (token.getExpiresAt().isBefore(LocalDateTime.now())) {
+        throw new DailyRoutineBadRequest("Code expired.");
+      }
     }
 
     token.setValidatedAt(LocalDateTime.now());

@@ -3,6 +3,7 @@ package com.slavomirlobotka.dailyroutineforkids.services;
 import com.slavomirlobotka.dailyroutineforkids.dtos.DisplayChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.RegisterChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.UpdateChildDTO;
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.Child;
 import com.slavomirlobotka.dailyroutineforkids.models.User;
 import com.slavomirlobotka.dailyroutineforkids.repositories.ChildRepository;
@@ -56,10 +57,11 @@ public class ParentServiceImpl implements ParentService {
   }
 
   @Override
-  public DisplayChildDTO updateChild(Long id, UpdateChildDTO updateChildDTO) throws Exception {
+  public DisplayChildDTO updateChild(Long id, UpdateChildDTO updateChildDTO)
+      throws DailyRoutineNotFound {
     Optional<Child> childOpt = childRepository.findById(id);
     if (childOpt.isEmpty()) {
-      throw new Exception("No child with ID " + id + " found");
+      throw new DailyRoutineNotFound("No child with ID " + id + " found");
     }
 
     Child child = childOpt.get();
@@ -79,10 +81,10 @@ public class ParentServiceImpl implements ParentService {
   }
 
   @Override
-  public void removeChild(Long id) throws Exception {
+  public void removeChild(Long id) throws DailyRoutineNotFound {
     Optional<Child> childOpt = childRepository.findById(id);
     if (childOpt.isEmpty()) {
-      throw new Exception("No child with ID " + id + " found");
+      throw new DailyRoutineNotFound("No child with ID " + id + " found");
     }
     Child child = childOpt.get();
     childRepository.delete(child);
