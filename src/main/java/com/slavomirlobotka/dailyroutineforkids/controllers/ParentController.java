@@ -1,12 +1,13 @@
 package com.slavomirlobotka.dailyroutineforkids.controllers;
 
+import com.slavomirlobotka.dailyroutineforkids.dtos.DisplayChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.RegisterChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.services.ParentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -22,5 +23,16 @@ public class ParentController {
     }
 
     parentService.createChild(name, registerChildDto);
+  }
+
+  @GetMapping("/parent/child/all")
+  public ResponseEntity<?> displayChildren() throws Exception {
+    List<DisplayChildDTO> children = parentService.getAllChildren();
+    if (children != null) {
+
+      return ResponseEntity.ok(children);
+    }
+
+    throw new Exception("No children found");
   }
 }

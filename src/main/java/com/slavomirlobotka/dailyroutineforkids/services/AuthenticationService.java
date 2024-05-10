@@ -1,6 +1,6 @@
 package com.slavomirlobotka.dailyroutineforkids.services;
 
-import com.slavomirlobotka.dailyroutineforkids.dtos.AuthenticationResponseDto;
+import com.slavomirlobotka.dailyroutineforkids.dtos.AuthenticationResponseDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.LoginRequestDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.RegisterRequestDTO;
 import com.slavomirlobotka.dailyroutineforkids.models.User;
@@ -15,7 +15,7 @@ public interface AuthenticationService {
 
   boolean verifyUserCode(String code, String email) throws Exception;
 
-  AuthenticationResponseDto authenticate(LoginRequestDTO loginRequestDTO) throws Exception;
+  AuthenticationResponseDTO authenticate(LoginRequestDTO loginRequestDTO) throws Exception;
 
   boolean isUserEnabled(String email);
 }
