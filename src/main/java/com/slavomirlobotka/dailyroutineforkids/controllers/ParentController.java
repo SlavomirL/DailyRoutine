@@ -4,11 +4,10 @@ import com.slavomirlobotka.dailyroutineforkids.dtos.DisplayChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.RegisterChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.UpdateChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.services.ParentService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -44,5 +43,12 @@ public class ParentController {
     DisplayChildDTO child = parentService.updateChild(id, updateChildDTO);
 
     return ResponseEntity.ok(child);
+  }
+
+  @DeleteMapping("/parent/child/{id}")
+  public ResponseEntity<?> deleteChild(@PathVariable Long id) throws Exception {
+    parentService.removeChild(id);
+
+    return ResponseEntity.ok("Child with id " + id + " has been removed from the list.");
   }
 }

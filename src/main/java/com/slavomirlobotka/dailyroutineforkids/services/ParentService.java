@@ -15,4 +15,6 @@ public interface ParentService {
   User getCurrentParent();
 
   DisplayChildDTO updateChild(Long id, UpdateChildDTO updateChildDTO) throws Exception;
+
+  void removeChild(Long id) throws Exception;
 }

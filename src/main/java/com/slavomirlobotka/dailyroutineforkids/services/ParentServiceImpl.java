@@ -7,13 +7,12 @@ import com.slavomirlobotka.dailyroutineforkids.models.Child;
 import com.slavomirlobotka.dailyroutineforkids.models.User;
 import com.slavomirlobotka.dailyroutineforkids.repositories.ChildRepository;
 import com.slavomirlobotka.dailyroutineforkids.repositories.UserRepository;
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -75,5 +74,15 @@ public class ParentServiceImpl implements ParentService {
     childRepository.save(child);
 
     return childService.convertSingleToDto(child);
+  }
+
+  @Override
+  public void removeChild(Long id) throws Exception {
+    Optional<Child> childOpt = childRepository.findById(id);
+    if (childOpt.isEmpty()) {
+      throw new Exception("No child with ID " + id + " found");
+    }
+    Child child = childOpt.get();
+    childRepository.delete(child);
   }
 }
