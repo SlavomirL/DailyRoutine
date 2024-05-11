@@ -11,7 +11,6 @@ import com.slavomirlobotka.dailyroutineforkids.repositories.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -61,12 +60,7 @@ public class ChildServiceImpl implements ChildService {
   @Override
   public DisplayChildDTO updateChild(Long id, UpdateChildDTO updateChildDTO)
       throws DailyRoutineNotFound {
-    Optional<Child> childOpt = childRepository.findById(id);
-    if (childOpt.isEmpty()) {
-      throw new DailyRoutineNotFound("No child with ID " + id + " found");
-    }
-
-    Child child = childOpt.get();
+    Child child = childRepository.findById(id).orElseThrow(() -> new DailyRoutineNotFound("No child with ID " + id + " found"));
 
     if (updateChildDTO.getName() != null) {
       child.setName(updateChildDTO.getName());
@@ -84,11 +78,7 @@ public class ChildServiceImpl implements ChildService {
 
   @Override
   public void removeChild(Long id) throws DailyRoutineNotFound {
-    Optional<Child> childOpt = childRepository.findById(id);
-    if (childOpt.isEmpty()) {
-      throw new DailyRoutineNotFound("No child with ID " + id + " found");
-    }
-    Child child = childOpt.get();
+    Child child = childRepository.findById(id).orElseThrow(() -> new DailyRoutineNotFound("No child with ID " + id + " found"));
     childRepository.delete(child);
   }
 
