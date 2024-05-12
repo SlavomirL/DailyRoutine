@@ -1,34 +1,34 @@
 package com.slavomirlobotka.dailyroutineforkids.models;
 
+import com.slavomirlobotka.dailyroutineforkids.enums.DayOfWeek;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import java.util.Set;
+import lombok.*;
 
+@Builder
 @Data
-@RequiredArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 public class Schedule {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @NotNull
-    private String scheduleName;
+  @NotNull private String scheduleName;
 
-    @NotNull
-    private LocalDate date;
+  @ElementCollection(targetClass = DayOfWeek.class)
+  @CollectionTable(name = "schedule_days", joinColumns = @JoinColumn(name = "schedule_id"))
+  @Column(name = "day_of_week")
+  @Enumerated(EnumType.STRING)
+  private Set<DayOfWeek> weekDays = new HashSet<>();
 
-    @NotNull
-    private String weekDay;
+  @ManyToOne private Child child;
 
-    @ManyToOne
-    private Child child;
-
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
-    private List<ScheduleTask> scheduleTasks;
-
+  @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
+  private List<ScheduleTask> scheduleTasks;
 }
