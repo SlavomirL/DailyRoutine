@@ -62,6 +62,33 @@ public class ScheduleServiceImpl implements ScheduleService {
   }
 
   @Override
+  public ScheduleResponseDTO displayScheduleByName(Long childId, String scheduleName)
+      throws DailyRoutineNotFound {
+    Child child = retreiveChild(childId);
+
+    List<Schedule> schedules = scheduleRepository.findByChild(child);
+    if (schedules.isEmpty()) {
+      throw new DailyRoutineNotFound(
+          "No schedule for child " + child.getName() + " with name '" + scheduleName + "' found.");
+    }
+
+    for (Schedule s : schedules) {
+      if (!s.getScheduleName().equals(scheduleName)) {
+
+        return ScheduleResponseDTO.builder()
+            .child(s.getChild().getName())
+            .scheduleId(s.getId())
+            .scheduleName(s.getScheduleName())
+            .weekDays(s.getWeekDays())
+            .tasks(s.getScheduleTasks())
+            .build();
+      }
+    }
+    throw new DailyRoutineNotFound(
+        "No schedule for child " + child.getName() + " with name '" + scheduleName + "' found.");
+  }
+
+  @Override
   public Child retreiveChild(Long childId) throws DailyRoutineNotFound {
     return childRepository
         .findById(childId)

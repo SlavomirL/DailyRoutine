@@ -30,4 +30,11 @@ public class ScheduleController {
 
     return ResponseEntity.ok(scheduleService.displayChildSchedules(childId));
   }
+
+  @GetMapping("/child/{childId}/schedule/{scheduleName}")
+  public ResponseEntity<?> getOneChildSchedule(
+      @PathVariable Long childId, @PathVariable String scheduleName) throws DailyRoutineNotFound {
+
+    return ResponseEntity.ok(scheduleService.displayScheduleByName(childId, scheduleName));
+  }
 }
