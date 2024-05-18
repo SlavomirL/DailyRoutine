@@ -29,7 +29,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     if (scheduleRepository.existsByChildIdAndScheduleName(
         childId, newScheduleDTO.getScheduleName())) {
       throw new DailyRoutineBadRequest(
-          "Schedule with this name already exists for child " + child.getName());
+          "Schedule with this name already exists for child '" + child.getName() + "'.");
     }
 
     Schedule schedule =
@@ -48,7 +48,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     List<Schedule> schedules = scheduleRepository.findByChild(child);
     if (schedules.isEmpty()) {
-      throw new DailyRoutineNotFound("No schedule for child " + child.getName() + " found.");
+      throw new DailyRoutineNotFound("No schedule for child '" + child.getName() + "' found.");
     }
 
     ScheduleListDTO result = new ScheduleListDTO();
@@ -76,7 +76,11 @@ public class ScheduleServiceImpl implements ScheduleService {
     List<Schedule> schedules = scheduleRepository.findByChild(child);
     if (schedules.isEmpty()) {
       throw new DailyRoutineNotFound(
-          "No schedule for child " + child.getName() + " with name '" + scheduleName + "' found.");
+          "No schedule for child '"
+              + child.getName()
+              + "' with name '"
+              + scheduleName
+              + "' found.");
     }
 
     for (Schedule s : schedules) {
@@ -99,6 +103,29 @@ public class ScheduleServiceImpl implements ScheduleService {
   public Child retreiveChild(Long childId) throws DailyRoutineNotFound {
     return childRepository
         .findById(childId)
-        .orElseThrow(() -> new DailyRoutineNotFound("Child with id " + childId + " not found."));
+        .orElseThrow(() -> new DailyRoutineNotFound("Child with id '" + childId + "' not found."));
+  }
+
+  @Override
+  public Schedule modifySchedule(Long childId, Long scheduleId, NewScheduleDTO scheduleData)
+      throws DailyRoutineNotFound {
+    Child child = retreiveChild(childId);
+
+    Schedule schedule = scheduleRepository.findByChildIdAndId(childId, scheduleId);
+    if (schedule == null) {
+      throw new DailyRoutineNotFound(
+          "No schedule with id '" + scheduleId + "' for child '" + child.getName() + "' found.");
+    }
+
+    if (scheduleData.getScheduleName() != null) {
+      schedule.setScheduleName(scheduleData.getScheduleName());
+    }
+    if (scheduleData.getWeekDays() != null) {
+      schedule.setWeekDays(scheduleData.getWeekDays());
+    }
+    //    if (scheduleData.getTasks() != null) {
+    //      schedule.setTasks(scheduleData.getTasks());
+    //    }
+    return scheduleRepository.save(schedule);
   }
 }

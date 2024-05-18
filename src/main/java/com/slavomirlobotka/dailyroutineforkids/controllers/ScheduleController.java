@@ -3,6 +3,7 @@ package com.slavomirlobotka.dailyroutineforkids.controllers;
 import com.slavomirlobotka.dailyroutineforkids.dtos.NewScheduleDTO;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
+import com.slavomirlobotka.dailyroutineforkids.models.Schedule;
 import com.slavomirlobotka.dailyroutineforkids.services.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -37,5 +38,24 @@ public class ScheduleController {
       @PathVariable Long childId, @PathVariable String scheduleName) throws DailyRoutineNotFound {
 
     return ResponseEntity.ok(scheduleService.displayScheduleByName(childId, scheduleName));
+  }
+
+  @PatchMapping("/child/{childId}/schedule/{scheduleId}")
+  public ResponseEntity<?> updateSchedule(
+      @PathVariable Long childId,
+      @PathVariable Long scheduleId,
+      @RequestBody(required = false) NewScheduleDTO scheduleData)
+      throws DailyRoutineNotFound {
+
+    Schedule schedule = scheduleService.modifySchedule(childId, scheduleId, scheduleData);
+
+    return ResponseEntity.ok(
+        "Schedule with ID '"
+            + scheduleId
+            + "' modified successfully. New name: '"
+            + schedule.getScheduleName()
+            + "'. New week days: '"
+            + schedule.getWeekDays()
+            + "'.");
   }
 }

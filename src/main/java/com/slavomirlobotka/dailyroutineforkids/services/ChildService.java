@@ -11,9 +11,10 @@ import java.util.List;
 
 public interface ChildService {
 
-  Long createChild(String childName, RegisterChildDTO registerChildDTO) throws DailyRoutineBadRequest;
+  Long createChild(String childName, RegisterChildDTO registerChildDTO)
+      throws DailyRoutineBadRequest;
 
-  List<DisplayChildDTO> getAllChildrenAsDTO();
+  List<DisplayChildDTO> getAllChildrenAsDTO() throws DailyRoutineNotFound;
 
   User getCurrentParent();
 

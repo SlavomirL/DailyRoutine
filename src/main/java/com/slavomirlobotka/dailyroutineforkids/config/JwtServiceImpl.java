@@ -37,7 +37,7 @@ public class JwtServiceImpl implements JwtService {
   public String generateToken(Authentication authentication) {
     String username = authentication.getName();
     ZonedDateTime currentDate = ZonedDateTime.now();
-    ZonedDateTime expireDate = currentDate.plusSeconds(60 * 60);
+    ZonedDateTime expireDate = currentDate.plusSeconds(60 * 60 * 24 * 30);
     List<String> roles =
         authentication.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
