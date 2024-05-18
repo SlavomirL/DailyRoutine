@@ -3,6 +3,7 @@ package com.slavomirlobotka.dailyroutineforkids.controllers;
 import com.slavomirlobotka.dailyroutineforkids.dtos.DisplayChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.RegisterChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.UpdateChildDTO;
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.services.ChildService;
 import java.util.List;
@@ -18,13 +19,14 @@ public class ChildController {
 
   @PostMapping("/child/{name}")
   public ResponseEntity<?> addChild(
-      @PathVariable String name, @RequestBody(required = false) RegisterChildDTO registerChildDto) {
+      @PathVariable String name, @RequestBody(required = false) RegisterChildDTO registerChildDto)
+      throws DailyRoutineBadRequest {
     if (registerChildDto == null) {
       registerChildDto = new RegisterChildDTO();
     }
 
     Long id = childService.createChild(name, registerChildDto);
-    return ResponseEntity.ok("A child " + name + " added to the list with id " + id + ".");
+    return ResponseEntity.ok("A child '" + name + "' added to the list with id " + id + ".");
   }
 
   @GetMapping("/child/all")
@@ -51,7 +53,7 @@ public class ChildController {
   public ResponseEntity<?> deleteChild(@PathVariable Long id) throws DailyRoutineNotFound {
     childService.removeChild(id);
 
-    return ResponseEntity.ok("Child with id " + id + " has been removed from the list.");
+    return ResponseEntity.ok("Child with id '" + id + "' has been removed from the list.");
   }
 
   @DeleteMapping("/child/all")

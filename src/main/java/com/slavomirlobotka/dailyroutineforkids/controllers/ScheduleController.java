@@ -1,6 +1,7 @@
 package com.slavomirlobotka.dailyroutineforkids.controllers;
 
 import com.slavomirlobotka.dailyroutineforkids.dtos.NewScheduleDTO;
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.services.ScheduleService;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +16,8 @@ public class ScheduleController {
 
   @PostMapping("/child/{childId}/schedule")
   public ResponseEntity<?> addScheduleToChild(
-      @PathVariable Long childId, @RequestBody(required = false) NewScheduleDTO newScheduleDTO)
-      throws DailyRoutineNotFound {
+      @PathVariable Long childId, @RequestBody NewScheduleDTO newScheduleDTO)
+      throws DailyRoutineNotFound, DailyRoutineBadRequest {
 
     scheduleService.addNewSchedule(childId, newScheduleDTO);
 

@@ -13,6 +13,9 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Table(
+    name = "schedule",
+    uniqueConstraints = {@UniqueConstraint(columnNames = {"child_id", "schedule_name"})})
 public class Schedule {
 
   @Id

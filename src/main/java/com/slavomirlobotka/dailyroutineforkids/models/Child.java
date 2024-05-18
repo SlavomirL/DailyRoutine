@@ -19,6 +19,7 @@ public class Child {
   private Long id;
 
   @NotBlank(message = "Name is mandatory")
+  @Column(unique = true)
   private String name;
 
   private Integer age;
