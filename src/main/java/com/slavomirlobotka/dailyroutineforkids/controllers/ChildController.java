@@ -29,7 +29,7 @@ public class ChildController {
 
   @GetMapping("/child/all")
   public ResponseEntity<?> displayChildren() throws Exception {
-    List<DisplayChildDTO> children = childService.getAllChildren();
+    List<DisplayChildDTO> children = childService.getAllChildrenAsDTO();
     if (children != null) {
 
       return ResponseEntity.ok(children);
@@ -52,5 +52,12 @@ public class ChildController {
     childService.removeChild(id);
 
     return ResponseEntity.ok("Child with id " + id + " has been removed from the list.");
+  }
+
+  @DeleteMapping("/child/all")
+  public ResponseEntity<?> deleteAllChildren() throws DailyRoutineNotFound {
+    childService.removeAllChildren();
+
+    return ResponseEntity.ok("All children have been removed from the list.");
   }
 }
