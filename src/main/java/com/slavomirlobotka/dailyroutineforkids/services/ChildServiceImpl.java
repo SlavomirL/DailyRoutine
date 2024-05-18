@@ -43,13 +43,6 @@ public class ChildServiceImpl implements ChildService {
   }
 
   @Override
-  public List<DisplayChildDTO> getAllChildren() {
-    User user = getCurrentParent();
-
-    return convertAllChildrenToDto(user.getChildren());
-  }
-
-  @Override
   public User getCurrentParent() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     String email = authentication.getName();
@@ -86,6 +79,26 @@ public class ChildServiceImpl implements ChildService {
             .findById(id)
             .orElseThrow(() -> new DailyRoutineNotFound("No child with ID " + id + " found"));
     childRepository.delete(child);
+  }
+
+  @Override
+  public void removeAllChildren() throws DailyRoutineNotFound {
+    User user = getCurrentParent();
+
+    List<Child> children = childRepository.findByUser(user);
+    if (children == null || children.isEmpty()) {
+      throw new DailyRoutineNotFound(
+          "This parent has no children currently assigned. Nothing to delete.");
+    }
+
+    childRepository.deleteAll(children);
+  }
+
+  @Override
+  public List<DisplayChildDTO> getAllChildrenAsDTO() {
+    User user = getCurrentParent();
+
+    return convertAllChildrenToDto(user.getChildren());
   }
 
   @Override

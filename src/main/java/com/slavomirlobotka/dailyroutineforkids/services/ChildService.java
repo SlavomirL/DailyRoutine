@@ -12,7 +12,7 @@ public interface ChildService {
 
   Long createChild(String childName, RegisterChildDTO registerChildDTO);
 
-  List<DisplayChildDTO> getAllChildren();
+  List<DisplayChildDTO> getAllChildrenAsDTO();
 
   User getCurrentParent();
 
@@ -23,4 +23,6 @@ public interface ChildService {
   List<DisplayChildDTO> convertAllChildrenToDto(List<Child> children);
 
   DisplayChildDTO convertSingleChildToDto(Child child);
+
+  void removeAllChildren() throws DailyRoutineNotFound;
 }
