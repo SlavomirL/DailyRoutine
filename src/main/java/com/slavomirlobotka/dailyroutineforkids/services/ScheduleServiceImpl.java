@@ -51,6 +51,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         .map(
             s ->
                 ScheduleResponseDTO.builder()
+                    .scheduleId(s.getId())
                     .scheduleName(s.getScheduleName())
                     .weekDays(s.getWeekDays())
                     .tasks(s.getScheduleTasks())

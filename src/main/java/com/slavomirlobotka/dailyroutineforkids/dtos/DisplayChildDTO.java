@@ -1,6 +1,5 @@
 package com.slavomirlobotka.dailyroutineforkids.dtos;
 
-import com.slavomirlobotka.dailyroutineforkids.models.Schedule;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,5 +16,5 @@ public class DisplayChildDTO {
   private String name;
   private Integer age;
   private String gender;
-  private List<Schedule> schedules;
+  private List<ScheduleResponseDTO> schedules;
 }

@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ScheduleResponseDTO {
 
+  private Long scheduleId;
   private String scheduleName;
   private Set<DayOfWeek> weekDays;
   private List<ScheduleTask> tasks;
