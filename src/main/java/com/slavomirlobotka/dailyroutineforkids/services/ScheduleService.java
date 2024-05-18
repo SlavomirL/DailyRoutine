@@ -6,14 +6,19 @@ import com.slavomirlobotka.dailyroutineforkids.dtos.ScheduleResponseDTO;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.Child;
+import com.slavomirlobotka.dailyroutineforkids.models.Schedule;
 
 public interface ScheduleService {
-  void addNewSchedule(Long childId, NewScheduleDTO newScheduleDTO) throws DailyRoutineNotFound, DailyRoutineBadRequest;
+  void addNewSchedule(Long childId, NewScheduleDTO newScheduleDTO)
+      throws DailyRoutineNotFound, DailyRoutineBadRequest;
 
   ScheduleListDTO displayChildSchedules(Long childId) throws DailyRoutineNotFound;
 
   Child retreiveChild(Long childId) throws DailyRoutineNotFound;
 
   ScheduleResponseDTO displayScheduleByName(Long childId, String scheduleName)
+      throws DailyRoutineNotFound;
+
+  Schedule modifySchedule(Long childId, Long scheduleId, NewScheduleDTO scheduleData)
       throws DailyRoutineNotFound;
 }
