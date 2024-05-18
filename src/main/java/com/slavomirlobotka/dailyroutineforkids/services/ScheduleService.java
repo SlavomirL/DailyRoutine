@@ -3,11 +3,12 @@ package com.slavomirlobotka.dailyroutineforkids.services;
 import com.slavomirlobotka.dailyroutineforkids.dtos.NewScheduleDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.ScheduleListDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.ScheduleResponseDTO;
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.Child;
 
 public interface ScheduleService {
-  void addNewSchedule(Long childId, NewScheduleDTO newScheduleDTO) throws DailyRoutineNotFound;
+  void addNewSchedule(Long childId, NewScheduleDTO newScheduleDTO) throws DailyRoutineNotFound, DailyRoutineBadRequest;
 
   ScheduleListDTO displayChildSchedules(Long childId) throws DailyRoutineNotFound;
 

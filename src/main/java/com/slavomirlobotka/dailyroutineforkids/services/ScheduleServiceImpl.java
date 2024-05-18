@@ -3,6 +3,7 @@ package com.slavomirlobotka.dailyroutineforkids.services;
 import com.slavomirlobotka.dailyroutineforkids.dtos.NewScheduleDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.ScheduleListDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.ScheduleResponseDTO;
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.Child;
 import com.slavomirlobotka.dailyroutineforkids.models.Schedule;
@@ -21,9 +22,15 @@ public class ScheduleServiceImpl implements ScheduleService {
 
   @Override
   public void addNewSchedule(Long childId, NewScheduleDTO newScheduleDTO)
-      throws DailyRoutineNotFound {
+      throws DailyRoutineNotFound, DailyRoutineBadRequest {
 
     Child child = retreiveChild(childId);
+
+    if (scheduleRepository.existsByChildIdAndScheduleName(
+        childId, newScheduleDTO.getScheduleName())) {
+      throw new DailyRoutineBadRequest(
+          "Schedule with this name already exists for child " + child.getName());
+    }
 
     Schedule schedule =
         Schedule.builder()
@@ -73,7 +80,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     for (Schedule s : schedules) {
-      if (!s.getScheduleName().equals(scheduleName)) {
+      if (s.getScheduleName().equals(scheduleName)) {
 
         return ScheduleResponseDTO.builder()
             .child(s.getChild().getName())

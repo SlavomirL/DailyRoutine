@@ -4,6 +4,7 @@ import com.slavomirlobotka.dailyroutineforkids.dtos.DisplayChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.RegisterChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.ScheduleResponseDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.UpdateChildDTO;
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.Child;
 import com.slavomirlobotka.dailyroutineforkids.models.User;
@@ -25,9 +26,14 @@ public class ChildServiceImpl implements ChildService {
   private final ChildRepository childRepository;
 
   @Override
-  public Long createChild(String childName, RegisterChildDTO registerChildDTO) {
+  public Long createChild(String childName, RegisterChildDTO registerChildDTO)
+      throws DailyRoutineBadRequest {
     User user = getCurrentParent();
 
+    if (childRepository.existsByUserIdAndName(user.getId(), childName)) {
+      throw new DailyRoutineBadRequest(
+          "A child with name '" + childName + "' already registered for this user.");
+    }
     Child child =
         Child.builder()
             .name(childName)
@@ -56,7 +62,7 @@ public class ChildServiceImpl implements ChildService {
     Child child =
         childRepository
             .findById(id)
-            .orElseThrow(() -> new DailyRoutineNotFound("No child with ID " + id + " found"));
+            .orElseThrow(() -> new DailyRoutineNotFound("No child with ID '" + id + "' found"));
 
     if (updateChildDTO.getName() != null) {
       child.setName(updateChildDTO.getName());
@@ -77,7 +83,7 @@ public class ChildServiceImpl implements ChildService {
     Child child =
         childRepository
             .findById(id)
-            .orElseThrow(() -> new DailyRoutineNotFound("No child with ID " + id + " found"));
+            .orElseThrow(() -> new DailyRoutineNotFound("No child with ID '" + id + "' found"));
     childRepository.delete(child);
   }
 
