@@ -20,7 +20,7 @@ public interface ChildService {
 
   void removeChild(Long id) throws DailyRoutineNotFound;
 
-  List<DisplayChildDTO> convertAllToDto(List<Child> children);
+  List<DisplayChildDTO> convertAllChildrenToDto(List<Child> children);
 
-  DisplayChildDTO convertSingleToDto(Child child);
+  DisplayChildDTO convertSingleChildToDto(Child child);
 }
