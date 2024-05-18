@@ -101,10 +101,16 @@ public class ChildServiceImpl implements ChildService {
   }
 
   @Override
-  public List<DisplayChildDTO> getAllChildrenAsDTO() {
+  public List<DisplayChildDTO> getAllChildrenAsDTO() throws DailyRoutineNotFound {
     User user = getCurrentParent();
 
-    return convertAllChildrenToDto(user.getChildren());
+    List<Child> children = childRepository.findByUser(user);
+    if (children == null || children.isEmpty()) {
+      throw new DailyRoutineNotFound(
+          "This parent has no children currently assigned. Nothing to display.");
+    }
+
+    return convertAllChildrenToDto(children);
   }
 
   @Override

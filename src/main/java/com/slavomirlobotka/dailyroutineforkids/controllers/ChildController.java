@@ -26,18 +26,15 @@ public class ChildController {
     }
 
     Long id = childService.createChild(name, registerChildDto);
+
     return ResponseEntity.ok("A child '" + name + "' added to the list with id " + id + ".");
   }
 
   @GetMapping("/child/all")
-  public ResponseEntity<?> displayChildren() throws Exception {
+  public ResponseEntity<?> displayChildren() throws DailyRoutineNotFound {
     List<DisplayChildDTO> children = childService.getAllChildrenAsDTO();
-    if (children != null) {
 
-      return ResponseEntity.ok(children);
-    }
-
-    throw new DailyRoutineNotFound("No children found for this parent");
+    return ResponseEntity.ok(children);
   }
 
   @PatchMapping("/child/{id}")
