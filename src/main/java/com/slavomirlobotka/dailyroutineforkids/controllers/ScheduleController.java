@@ -3,6 +3,7 @@ package com.slavomirlobotka.dailyroutineforkids.controllers;
 import com.slavomirlobotka.dailyroutineforkids.dtos.NewScheduleDTO;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
+import com.slavomirlobotka.dailyroutineforkids.models.Child;
 import com.slavomirlobotka.dailyroutineforkids.models.Schedule;
 import com.slavomirlobotka.dailyroutineforkids.services.ScheduleService;
 import lombok.RequiredArgsConstructor;
@@ -80,5 +81,35 @@ public class ScheduleController {
                 + "' already exists for children: '"
                 + namesWithExisting
                 + "'. It has only been created for other children belonging to this parent.");
+  }
+
+  @DeleteMapping("/children/{childId}/schedule/{scheduleId}")
+  public ResponseEntity<?> deleteSchedule(@PathVariable Long childId, @PathVariable Long scheduleId)
+      throws DailyRoutineNotFound {
+    Child child = scheduleService.removeSchedule(childId, scheduleId);
+
+    return ResponseEntity.ok(
+        "Schedule with id '"
+            + scheduleId
+            + "' has been removed from the list for child '"
+            + child.getName()
+            + "'.");
+  }
+
+  @DeleteMapping("/children/{childId}/schedule")
+  public ResponseEntity<?> deleteAllSchedulesPerChild(@PathVariable Long childId)
+      throws DailyRoutineNotFound {
+    Child child = scheduleService.removeAllSchedulesPerChild(childId);
+
+    return ResponseEntity.ok(
+        "All schedules have been removed from the list for child '" + child.getName() + "'.");
+  }
+
+  @DeleteMapping("/children/schedule")
+  public ResponseEntity<?> deleteAllSchedules() throws DailyRoutineNotFound {
+    scheduleService.removeAllSchedules();
+
+    return ResponseEntity.ok(
+            "All schedules have been removed from the list for all children.");
   }
 }

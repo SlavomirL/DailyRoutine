@@ -14,7 +14,7 @@ import com.slavomirlobotka.dailyroutineforkids.repositories.ScheduleRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.slavomirlobotka.dailyroutineforkids.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -172,5 +172,64 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     return childrenWithExistingSchedule;
+  }
+
+  @Override
+  public Child removeSchedule(Long childId, Long scheduleId) throws DailyRoutineNotFound {
+    Child child = retreiveChild(childId);
+
+    Schedule schedule = scheduleRepository.findByChildIdAndId(childId, scheduleId);
+    if (schedule == null) {
+      throw new DailyRoutineNotFound(
+          "Schedule with ID '"
+              + scheduleId
+              + "' does not exist for child '"
+              + child.getName()
+              + "'.");
+    }
+
+    scheduleRepository.delete(schedule);
+
+    return child;
+  }
+
+  @Override
+  @Transactional
+  public Child removeAllSchedulesPerChild(Long childId) throws DailyRoutineNotFound {
+    Child child = retreiveChild(childId);
+
+    List<Schedule> schedules = scheduleRepository.findByChild(child);
+    if (schedules == null || schedules.isEmpty()) {
+      throw new DailyRoutineNotFound("No schedules found for child '" + child.getName() + "'.");
+    }
+    scheduleRepository.deleteAllByChildId(childId);
+
+    return child;
+  }
+
+  @Override
+  @Transactional
+  public void removeAllSchedules() throws DailyRoutineNotFound {
+    User user = authenticationService.getCurrentParent();
+    List<Child> children = childRepository.findAllByUser(user);
+    if (children == null || children.isEmpty()) {
+      throw new DailyRoutineNotFound(
+          "There are no children belonging to parent '" + user.getFirstName() + "'.");
+    }
+
+    boolean schedulesFound = false;
+    for (Child ch : children) {
+      if (ch.getSchedules() != null && !ch.getSchedules().isEmpty()) {
+        schedulesFound = true;
+        break;
+      }
+    }
+
+    if (schedulesFound) {
+      scheduleRepository.deleteAllByUserId(user.getId());
+    } else {
+      throw new DailyRoutineNotFound(
+          "No schedules were found for children of parent '" + user.getFirstName() + "'.");
+    }
   }
 }
