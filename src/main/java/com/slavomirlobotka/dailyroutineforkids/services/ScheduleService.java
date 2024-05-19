@@ -25,4 +25,6 @@ public interface ScheduleService {
 
   List<String> addSameScheduleToAll(NewScheduleDTO newScheduleDTO)
       throws DailyRoutineNotFound, DailyRoutineBadRequest;
+
+  Child removeSchedule(Long childId, Long scheduleId) throws DailyRoutineNotFound;
 }

@@ -173,4 +173,23 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     return childrenWithExistingSchedule;
   }
+
+  @Override
+  public Child removeSchedule(Long childId, Long scheduleId) throws DailyRoutineNotFound {
+    Child child = retreiveChild(childId);
+
+    Schedule schedule = scheduleRepository.findByChildIdAndId(childId, scheduleId);
+    if (schedule == null) {
+      throw new DailyRoutineNotFound(
+          "Schedule with ID '"
+              + scheduleId
+              + "' does not exist for child '"
+              + child.getName()
+              + "'.");
+    }
+
+    scheduleRepository.delete(schedule);
+
+    return child;
+  }
 }
