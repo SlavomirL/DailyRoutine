@@ -17,7 +17,7 @@ public class ChildController {
 
   private final ChildService childService;
 
-  @PostMapping("/child/{name}")
+  @PostMapping("/children/{name}")
   public ResponseEntity<?> addChild(
       @PathVariable String name, @RequestBody(required = false) RegisterChildDTO registerChildDto)
       throws DailyRoutineBadRequest {
@@ -30,14 +30,14 @@ public class ChildController {
     return ResponseEntity.ok("A child '" + name + "' added to the list with id " + id + ".");
   }
 
-  @GetMapping("/child/all")
+  @GetMapping("/children")
   public ResponseEntity<?> displayChildren() throws DailyRoutineNotFound {
     List<DisplayChildDTO> children = childService.getAllChildrenAsDTO();
 
     return ResponseEntity.ok(children);
   }
 
-  @PatchMapping("/child/{id}")
+  @PatchMapping("/children/{id}")
   public ResponseEntity<?> updateChildData(
       @PathVariable Long id, @RequestBody(required = false) UpdateChildDTO updateChildDTO)
       throws DailyRoutineNotFound {
@@ -46,14 +46,14 @@ public class ChildController {
     return ResponseEntity.ok(child);
   }
 
-  @DeleteMapping("/child/{id}")
+  @DeleteMapping("/children/{id}")
   public ResponseEntity<?> deleteChild(@PathVariable Long id) throws DailyRoutineNotFound {
     childService.removeChild(id);
 
     return ResponseEntity.ok("Child with id '" + id + "' has been removed from the list.");
   }
 
-  @DeleteMapping("/child/all")
+  @DeleteMapping("/children")
   public ResponseEntity<?> deleteAllChildren() throws DailyRoutineNotFound {
     childService.removeAllChildren();
 
