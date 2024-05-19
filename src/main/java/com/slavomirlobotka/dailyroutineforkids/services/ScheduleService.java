@@ -7,6 +7,7 @@ import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.Child;
 import com.slavomirlobotka.dailyroutineforkids.models.Schedule;
+import java.util.List;
 
 public interface ScheduleService {
   void addNewSchedule(Long childId, NewScheduleDTO newScheduleDTO)
@@ -21,4 +22,7 @@ public interface ScheduleService {
 
   Schedule modifySchedule(Long childId, Long scheduleId, NewScheduleDTO scheduleData)
       throws DailyRoutineNotFound;
+
+  List<String> addSameScheduleToAll(NewScheduleDTO newScheduleDTO)
+      throws DailyRoutineNotFound, DailyRoutineBadRequest;
 }

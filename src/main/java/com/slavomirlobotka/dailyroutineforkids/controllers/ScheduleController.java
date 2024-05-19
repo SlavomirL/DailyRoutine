@@ -6,8 +6,11 @@ import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.Schedule;
 import com.slavomirlobotka.dailyroutineforkids.services.ScheduleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -15,7 +18,7 @@ public class ScheduleController {
 
   private final ScheduleService scheduleService;
 
-  @PostMapping("/child/{childId}/schedule")
+  @PostMapping("/children/{childId}/schedule")
   public ResponseEntity<?> addScheduleToChild(
       @PathVariable Long childId, @RequestBody NewScheduleDTO newScheduleDTO)
       throws DailyRoutineNotFound, DailyRoutineBadRequest {
@@ -26,21 +29,21 @@ public class ScheduleController {
         "Schedule '" + newScheduleDTO.getScheduleName() + "' created for child with ID " + childId);
   }
 
-  @GetMapping("/child/{childId}/schedule")
+  @GetMapping("/children/{childId}/schedule")
   public ResponseEntity<?> checkChildSchedule(@PathVariable Long childId)
       throws DailyRoutineNotFound {
 
     return ResponseEntity.ok(scheduleService.displayChildSchedules(childId));
   }
 
-  @GetMapping("/child/{childId}/schedule/{scheduleName}")
+  @GetMapping("/children/{childId}/schedule/{scheduleName}")
   public ResponseEntity<?> getOneChildSchedule(
       @PathVariable Long childId, @PathVariable String scheduleName) throws DailyRoutineNotFound {
 
     return ResponseEntity.ok(scheduleService.displayScheduleByName(childId, scheduleName));
   }
 
-  @PatchMapping("/child/{childId}/schedule/{scheduleId}")
+  @PatchMapping("/children/{childId}/schedule/{scheduleId}")
   public ResponseEntity<?> updateSchedule(
       @PathVariable Long childId,
       @PathVariable Long scheduleId,
@@ -57,5 +60,25 @@ public class ScheduleController {
             + "'. New week days: '"
             + schedule.getWeekDays()
             + "'.");
+  }
+
+  @PostMapping("/children/schedule")
+  public ResponseEntity<?> addSameSchedule(@RequestBody NewScheduleDTO newScheduleDTO)
+      throws DailyRoutineNotFound, DailyRoutineBadRequest {
+
+    List<String> namesWithExisting = scheduleService.addSameScheduleToAll(newScheduleDTO);
+
+    if (namesWithExisting == null || namesWithExisting.isEmpty()) {
+      return ResponseEntity.ok(
+          "Schedule '" + newScheduleDTO.getScheduleName() + "' created for all children.");
+    }
+
+    return ResponseEntity.status(HttpStatusCode.valueOf(209))
+        .body(
+            "The schedule with name '"
+                + newScheduleDTO.getScheduleName()
+                + "' already exists for children: '"
+                + namesWithExisting
+                + "'. It has only been created for other children belonging to this parent.");
   }
 }

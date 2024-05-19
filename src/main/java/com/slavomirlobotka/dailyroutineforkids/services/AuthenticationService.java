@@ -22,4 +22,6 @@ public interface AuthenticationService {
       throws DailyRoutineUnauthorized;
 
   boolean isUserEnabled(String email);
+
+    User getCurrentParent();
 }
