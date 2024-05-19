@@ -7,9 +7,14 @@ import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.Child;
 import com.slavomirlobotka.dailyroutineforkids.models.Schedule;
+import com.slavomirlobotka.dailyroutineforkids.models.User;
 import com.slavomirlobotka.dailyroutineforkids.repositories.ChildRepository;
 import com.slavomirlobotka.dailyroutineforkids.repositories.ScheduleRepository;
+
+import java.util.ArrayList;
 import java.util.List;
+
+import com.slavomirlobotka.dailyroutineforkids.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +24,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
   private final ChildRepository childRepository;
   private final ScheduleRepository scheduleRepository;
+  private final AuthenticationService authenticationService;
 
   @Override
   public void addNewSchedule(Long childId, NewScheduleDTO newScheduleDTO)
@@ -127,5 +133,44 @@ public class ScheduleServiceImpl implements ScheduleService {
     //      schedule.setTasks(scheduleData.getTasks());
     //    }
     return scheduleRepository.save(schedule);
+  }
+
+  @Override
+  public List<String> addSameScheduleToAll(NewScheduleDTO newScheduleDTO)
+      throws DailyRoutineNotFound, DailyRoutineBadRequest {
+    User user = authenticationService.getCurrentParent();
+    List<Child> children = childRepository.findAllByUser(user);
+    if (children == null || children.isEmpty()) {
+      throw new DailyRoutineNotFound(
+          "There are no children belonging to parent '" + user.getFirstName() + "'.");
+    }
+
+    List<String> childrenWithExistingSchedule = new ArrayList<>();
+    for (Child ch : children) {
+      if (!scheduleRepository.existsByChildIdAndScheduleName(
+          ch.getId(), newScheduleDTO.getScheduleName())) {
+        Schedule schedule =
+            Schedule.builder()
+                .child(ch)
+                .scheduleName(newScheduleDTO.getScheduleName())
+                .weekDays(newScheduleDTO.getWeekDays())
+                .build();
+
+        scheduleRepository.save(schedule);
+      } else {
+        childrenWithExistingSchedule.add(ch.getName());
+      }
+    }
+
+    if (childrenWithExistingSchedule.size() == children.size()) {
+      throw new DailyRoutineBadRequest(
+          "The schedule with name '"
+              + newScheduleDTO.getScheduleName()
+              + "' already exists for all children belonging to parent '"
+              + user.getFirstName()
+              + "'.");
+    }
+
+    return childrenWithExistingSchedule;
   }
 }

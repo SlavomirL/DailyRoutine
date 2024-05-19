@@ -124,7 +124,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
       return AuthenticationResponseDTO.builder().token(jwtToken).build();
     } else {
-      throw new DailyRoutineUnauthorized("you have to verify your email first");
+      throw new DailyRoutineUnauthorized("You have to verify your email first.");
     }
   }
 
@@ -133,5 +133,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     User user = userRepository.findByEmail(email);
 
     return user.isEnabled();
+  }
+
+  @Override
+  public User getCurrentParent() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String email = authentication.getName();
+
+    return userRepository.findByEmail(email);
   }
 }

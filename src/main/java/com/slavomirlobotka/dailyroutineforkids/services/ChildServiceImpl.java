@@ -9,30 +9,31 @@ import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.Child;
 import com.slavomirlobotka.dailyroutineforkids.models.User;
 import com.slavomirlobotka.dailyroutineforkids.repositories.ChildRepository;
-import com.slavomirlobotka.dailyroutineforkids.repositories.UserRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
 public class ChildServiceImpl implements ChildService {
 
-  private final UserRepository userRepository;
   private final ChildRepository childRepository;
+  private final AuthenticationService authenticationService;
 
   @Override
   public Long createChild(String childName, RegisterChildDTO registerChildDTO)
       throws DailyRoutineBadRequest {
-    User user = getCurrentParent();
+    User user = authenticationService.getCurrentParent();
 
     if (childRepository.existsByUserIdAndName(user.getId(), childName)) {
       throw new DailyRoutineBadRequest(
-          "A child with name '" + childName + "' already registered for this user.");
+          "A child with name '"
+              + childName
+              + "' already registered for parent '"
+              + user.getFirstName()
+              + "'.");
     }
     Child child =
         Child.builder()
@@ -49,20 +50,12 @@ public class ChildServiceImpl implements ChildService {
   }
 
   @Override
-  public User getCurrentParent() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    String email = authentication.getName();
-
-    return userRepository.findByEmail(email);
-  }
-
-  @Override
   public DisplayChildDTO updateChild(Long id, UpdateChildDTO updateChildDTO)
       throws DailyRoutineNotFound {
     Child child =
         childRepository
             .findById(id)
-            .orElseThrow(() -> new DailyRoutineNotFound("No child with ID '" + id + "' found"));
+            .orElseThrow(() -> new DailyRoutineNotFound("No child with ID '" + id + "' found."));
 
     if (updateChildDTO.getName() != null) {
       child.setName(updateChildDTO.getName());
@@ -83,13 +76,13 @@ public class ChildServiceImpl implements ChildService {
     Child child =
         childRepository
             .findById(id)
-            .orElseThrow(() -> new DailyRoutineNotFound("No child with ID '" + id + "' found"));
+            .orElseThrow(() -> new DailyRoutineNotFound("No child with ID '" + id + "' found."));
     childRepository.delete(child);
   }
 
   @Override
   public void removeAllChildren() throws DailyRoutineNotFound {
-    User user = getCurrentParent();
+    User user = authenticationService.getCurrentParent();
 
     List<Child> children = childRepository.findByUser(user);
     if (children == null || children.isEmpty()) {
@@ -102,7 +95,7 @@ public class ChildServiceImpl implements ChildService {
 
   @Override
   public List<DisplayChildDTO> getAllChildrenAsDTO() throws DailyRoutineNotFound {
-    User user = getCurrentParent();
+    User user = authenticationService.getCurrentParent();
 
     List<Child> children = childRepository.findByUser(user);
     if (children == null || children.isEmpty()) {

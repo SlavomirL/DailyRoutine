@@ -6,8 +6,11 @@ import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.Schedule;
 import com.slavomirlobotka.dailyroutineforkids.services.ScheduleService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -59,4 +62,23 @@ public class ScheduleController {
             + "'.");
   }
 
+  @PostMapping("/children/schedule")
+  public ResponseEntity<?> addSameSchedule(@RequestBody NewScheduleDTO newScheduleDTO)
+      throws DailyRoutineNotFound, DailyRoutineBadRequest {
+
+    List<String> namesWithExisting = scheduleService.addSameScheduleToAll(newScheduleDTO);
+
+    if (namesWithExisting == null || namesWithExisting.isEmpty()) {
+      return ResponseEntity.ok(
+          "Schedule '" + newScheduleDTO.getScheduleName() + "' created for all children.");
+    }
+
+    return ResponseEntity.status(HttpStatusCode.valueOf(209))
+        .body(
+            "The schedule with name '"
+                + newScheduleDTO.getScheduleName()
+                + "' already exists for children: '"
+                + namesWithExisting
+                + "'. It has only been created for other children belonging to this parent.");
+  }
 }

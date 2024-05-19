@@ -14,4 +14,6 @@ public interface ChildRepository extends JpaRepository<Child, Long> {
   @Query(
       "SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM Child c WHERE c.user.id = :userId AND c.name = :name")
   boolean existsByUserIdAndName(@Param("userId") Long userId, @Param("name") String name);
+
+  List<Child> findAllByUser(User user);
 }
