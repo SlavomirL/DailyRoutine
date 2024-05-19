@@ -206,4 +206,30 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     return child;
   }
+
+  @Override
+  @Transactional
+  public void removeAllSchedules() throws DailyRoutineNotFound {
+    User user = authenticationService.getCurrentParent();
+    List<Child> children = childRepository.findAllByUser(user);
+    if (children == null || children.isEmpty()) {
+      throw new DailyRoutineNotFound(
+          "There are no children belonging to parent '" + user.getFirstName() + "'.");
+    }
+
+    boolean schedulesFound = false;
+    for (Child ch : children) {
+      if (ch.getSchedules() != null && !ch.getSchedules().isEmpty()) {
+        schedulesFound = true;
+        break;
+      }
+    }
+
+    if (schedulesFound) {
+      scheduleRepository.deleteAllByUserId(user.getId());
+    } else {
+      throw new DailyRoutineNotFound(
+          "No schedules were found for children of parent '" + user.getFirstName() + "'.");
+    }
+  }
 }

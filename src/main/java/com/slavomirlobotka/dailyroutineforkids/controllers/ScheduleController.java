@@ -104,4 +104,12 @@ public class ScheduleController {
     return ResponseEntity.ok(
         "All schedules have been removed from the list for child '" + child.getName() + "'.");
   }
+
+  @DeleteMapping("/children/schedule")
+  public ResponseEntity<?> deleteAllSchedules() throws DailyRoutineNotFound {
+    scheduleService.removeAllSchedules();
+
+    return ResponseEntity.ok(
+            "All schedules have been removed from the list for all children.");
+  }
 }

@@ -29,4 +29,6 @@ public interface ScheduleService {
   Child removeSchedule(Long childId, Long scheduleId) throws DailyRoutineNotFound;
 
   Child removeAllSchedulesPerChild(Long childId) throws DailyRoutineNotFound;
+
+  void removeAllSchedules() throws DailyRoutineNotFound;
 }

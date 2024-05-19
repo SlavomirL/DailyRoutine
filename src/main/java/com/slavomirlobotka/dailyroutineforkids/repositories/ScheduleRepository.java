@@ -21,4 +21,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
   @Modifying
   @Query("DELETE FROM Schedule s WHERE s.child.id = :childId")
   void deleteAllByChildId(@Param("childId") Long childId);
+
+  @Modifying
+  @Query("DELETE FROM Schedule s WHERE s.child.id IN (SELECT c.id FROM Child c WHERE c.user.id = :userId)")
+  void deleteAllByUserId(@Param("userId") Long userId);
 }
