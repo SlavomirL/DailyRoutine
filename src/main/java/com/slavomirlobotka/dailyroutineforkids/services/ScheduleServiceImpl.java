@@ -14,7 +14,7 @@ import com.slavomirlobotka.dailyroutineforkids.repositories.ScheduleRepository;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.slavomirlobotka.dailyroutineforkids.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -189,6 +189,20 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     scheduleRepository.delete(schedule);
+
+    return child;
+  }
+
+  @Override
+  @Transactional
+  public Child removeAllSchedulesPerChild(Long childId) throws DailyRoutineNotFound {
+    Child child = retreiveChild(childId);
+
+    List<Schedule> schedules = scheduleRepository.findByChild(child);
+    if (schedules == null || schedules.isEmpty()) {
+      throw new DailyRoutineNotFound("No schedules found for child '" + child.getName() + "'.");
+    }
+    scheduleRepository.deleteAllByChildId(childId);
 
     return child;
   }

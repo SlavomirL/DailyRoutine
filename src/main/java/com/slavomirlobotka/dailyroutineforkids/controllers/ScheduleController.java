@@ -83,7 +83,7 @@ public class ScheduleController {
                 + "'. It has only been created for other children belonging to this parent.");
   }
 
-  @DeleteMapping("children/{childId}/schedule/{scheduleId}")
+  @DeleteMapping("/children/{childId}/schedule/{scheduleId}")
   public ResponseEntity<?> deleteSchedule(@PathVariable Long childId, @PathVariable Long scheduleId)
       throws DailyRoutineNotFound {
     Child child = scheduleService.removeSchedule(childId, scheduleId);
@@ -94,5 +94,14 @@ public class ScheduleController {
             + "' has been removed from the list for child '"
             + child.getName()
             + "'.");
+  }
+
+  @DeleteMapping("/children/{childId}/schedule")
+  public ResponseEntity<?> deleteAllSchedulesPerChild(@PathVariable Long childId)
+      throws DailyRoutineNotFound {
+    Child child = scheduleService.removeAllSchedulesPerChild(childId);
+
+    return ResponseEntity.ok(
+        "All schedules have been removed from the list for child '" + child.getName() + "'.");
   }
 }

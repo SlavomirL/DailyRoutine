@@ -5,6 +5,7 @@ import com.slavomirlobotka.dailyroutineforkids.models.Schedule;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.query.Param;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
@@ -16,4 +17,8 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
       @Param("childId") Long childId, @Param("scheduleName") String scheduleName);
 
   Schedule findByChildIdAndId(Long childId, Long scheduleId);
+
+  @Modifying
+  @Query("DELETE FROM Schedule s WHERE s.child.id = :childId")
+  void deleteAllByChildId(@Param("childId") Long childId);
 }
