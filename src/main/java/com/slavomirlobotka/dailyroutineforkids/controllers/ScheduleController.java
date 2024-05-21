@@ -6,12 +6,11 @@ import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.Child;
 import com.slavomirlobotka.dailyroutineforkids.models.Schedule;
 import com.slavomirlobotka.dailyroutineforkids.services.ScheduleService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -60,6 +59,8 @@ public class ScheduleController {
             + schedule.getScheduleName()
             + "'. New week days: '"
             + schedule.getWeekDays()
+            + "'. New point limit to finish the schedule: '"
+            + schedule.getPointsToFinish()
             + "'.");
   }
 
@@ -109,7 +110,6 @@ public class ScheduleController {
   public ResponseEntity<?> deleteAllSchedules() throws DailyRoutineNotFound {
     scheduleService.removeAllSchedules();
 
-    return ResponseEntity.ok(
-            "All schedules have been removed from the list for all children.");
+    return ResponseEntity.ok("All schedules have been removed from the list for all children.");
   }
 }

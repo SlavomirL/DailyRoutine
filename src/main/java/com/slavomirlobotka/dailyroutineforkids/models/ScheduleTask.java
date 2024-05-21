@@ -28,4 +28,7 @@ public class ScheduleTask {
     @NotNull
     private Boolean mustBeDone;
 
+    @NotNull
+    private Boolean isFinished;
+
 }
