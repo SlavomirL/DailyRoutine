@@ -41,12 +41,13 @@ public class Schedule {
   private List<ScheduleTask> scheduleTasks;
 
   @Builder
-  public Schedule(String scheduleName, Child child, Set<DayOfWeek> weekDays) {
+  public Schedule(
+      String scheduleName, Child child, Set<DayOfWeek> weekDays, Integer pointsToFinish) {
     this.scheduleName = scheduleName;
     this.child = child;
     this.weekDays = weekDays;
     this.isFinished = false;
     this.maxPoints = 0;
-    this.pointsToFinish = 0;
+    this.pointsToFinish = pointsToFinish;
   }
 }

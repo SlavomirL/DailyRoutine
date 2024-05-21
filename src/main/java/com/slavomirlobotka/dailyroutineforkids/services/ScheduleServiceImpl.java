@@ -41,6 +41,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             .child(child)
             .scheduleName(newScheduleDTO.getScheduleName())
             .weekDays(newScheduleDTO.getWeekDays())
+            .pointsToFinish(newScheduleDTO.getPointsToFinish())
             .build();
 
     scheduleRepository.save(schedule);
@@ -136,6 +137,9 @@ public class ScheduleServiceImpl implements ScheduleService {
     //    if (scheduleData.getTasks() != null) {
     //      schedule.setTasks(scheduleData.getTasks());
     //    }
+    if (scheduleData.getPointsToFinish() != null) {
+      schedule.setPointsToFinish(scheduleData.getPointsToFinish());
+    }
     return scheduleRepository.save(schedule);
   }
 
@@ -158,6 +162,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .child(ch)
                 .scheduleName(newScheduleDTO.getScheduleName())
                 .weekDays(newScheduleDTO.getWeekDays())
+                .pointsToFinish(newScheduleDTO.getPointsToFinish())
                 .build();
 
         scheduleRepository.save(schedule);
