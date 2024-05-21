@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 import lombok.*;
 
-@Builder
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -30,8 +29,24 @@ public class Schedule {
   @Enumerated(EnumType.STRING)
   private Set<DayOfWeek> weekDays = new HashSet<>();
 
+  @NotNull private Boolean isFinished;
+
+  @NotNull private Integer maxPoints;
+
+  @NotNull private Integer pointsToFinish;
+
   @ManyToOne private Child child;
 
   @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
   private List<ScheduleTask> scheduleTasks;
+
+  @Builder
+  public Schedule(String scheduleName, Child child, Set<DayOfWeek> weekDays) {
+    this.scheduleName = scheduleName;
+    this.child = child;
+    this.weekDays = weekDays;
+    this.isFinished = false;
+    this.maxPoints = 0;
+    this.pointsToFinish = 0;
+  }
 }
