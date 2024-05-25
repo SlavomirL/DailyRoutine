@@ -50,4 +50,12 @@ public class TaskController {
       return ResponseEntity.ok("No changes for the task '" + task.getTaskName() + "'.");
     }
   }
+
+  @DeleteMapping("/tasks/{taskId}")
+  public ResponseEntity<?> deleteTask(@PathVariable Long taskId)
+      throws DailyRoutineNotFound, DailyRoutineBadRequest {
+    Task task = taskService.removeTask(taskId);
+
+    return ResponseEntity.ok("Task '" + task.getTaskName() + "' removed from the database.");
+  }
 }
