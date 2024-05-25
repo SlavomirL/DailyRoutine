@@ -31,6 +31,16 @@ public class TaskServiceImpl implements TaskService {
     }
   }
 
+  @Override
+  public void createCustomTask(String taskName, String description) throws DailyRoutineBadRequest {
+    if (!taskRepository.existsByTaskName(taskName)) {
+      Task newTask = Task.builder().taskName(taskName).description(description).build();
+      taskRepository.save(newTask);
+    } else {
+      throw new DailyRoutineBadRequest("Task with name '" + taskName + "' already exists.");
+    }
+  }
+
   @Transactional
   @Override
   public ScheduleTask addNewTask(Long scheduleId, Long taskId) throws DailyRoutineNotFound {

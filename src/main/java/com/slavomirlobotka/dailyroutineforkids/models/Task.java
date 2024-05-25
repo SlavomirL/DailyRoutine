@@ -18,6 +18,8 @@ public class Task {
 
   @NotNull private String taskName;
 
+  private String description;
+
   @OneToMany(mappedBy = "task")
   private List<ScheduleTask> scheduleTasks;
 }
