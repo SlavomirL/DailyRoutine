@@ -5,4 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
   boolean existsByTaskName(String taskName);
+
+  boolean existsByTaskNameAndUserId(String taskName, Long userId);
 }

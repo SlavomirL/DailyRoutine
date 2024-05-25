@@ -12,4 +12,6 @@ public interface TaskService {
 
   Task updateTask(Long taskId, UpdateTaskDTO updateTaskDTO)
       throws DailyRoutineNotFound, DailyRoutineBadRequest;
+
+  Task removeTask(Long taskId) throws DailyRoutineNotFound, DailyRoutineBadRequest;
 }

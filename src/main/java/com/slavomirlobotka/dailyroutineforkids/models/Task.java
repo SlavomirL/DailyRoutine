@@ -21,7 +21,12 @@ public class Task {
 
   private String description;
 
-  @NotNull private Boolean custom;
+  @NotNull private Boolean isCustom;
+
+  @JsonIgnore
+  @ManyToOne
+  @JoinColumn(name = "user_id")
+  private User user;
 
   @JsonIgnore
   @OneToMany(mappedBy = "task")
