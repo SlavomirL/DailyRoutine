@@ -1,8 +1,10 @@
 package com.slavomirlobotka.dailyroutineforkids.controllers;
 
+import com.slavomirlobotka.dailyroutineforkids.dtos.UpdateTaskDTO;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.ScheduleTask;
+import com.slavomirlobotka.dailyroutineforkids.models.Task;
 import com.slavomirlobotka.dailyroutineforkids.services.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -28,18 +30,24 @@ public class TaskController {
     return ResponseEntity.ok("Task '" + taskName + "' created.");
   }
 
-  @PostMapping("/schedules/{scheduleId}/tasks/{taskId}")
-  public ResponseEntity<?> addTaskToSchedule(
-      @PathVariable Long scheduleId, @PathVariable Long taskId) throws DailyRoutineNotFound {
-    ScheduleTask added = taskService.addNewTask(scheduleId, taskId);
-
-    return ResponseEntity.ok(
-        "Task '"
-            + added.getTask().getTaskName()
-            + "' added to the schedule '"
-            + added.getSchedule().getScheduleName()
-            + "' of child '"
-            + added.getSchedule().getChild().getName()
-            + "'.");
+  @PatchMapping("/tasks/{taskId}")
+  public ResponseEntity<?> modifyTask(
+      @PathVariable Long taskId, @RequestBody(required = false) UpdateTaskDTO updateTaskDTO)
+      throws DailyRoutineNotFound, DailyRoutineBadRequest {
+    Task task = taskService.updateTask(taskId, updateTaskDTO);
+    if (updateTaskDTO.getDescription() != null && updateTaskDTO.getTaskName() != null) {
+      return ResponseEntity.ok(
+          "Task updated. New name: '"
+              + task.getTaskName()
+              + "'. New description: '"
+              + task.getDescription()
+              + "'.");
+    } else if (updateTaskDTO.getDescription() != null) {
+      return ResponseEntity.ok("Task updated. New description: '" + task.getDescription() + "'.");
+    } else if (updateTaskDTO.getTaskName() != null) {
+      return ResponseEntity.ok("Task updated. New name: '" + task.getTaskName() + "'.");
+    } else {
+      return ResponseEntity.ok("No changes for the task '" + task.getTaskName() + "'.");
+    }
   }
 }
