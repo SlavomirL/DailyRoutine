@@ -9,6 +9,7 @@ import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.Child;
 import com.slavomirlobotka.dailyroutineforkids.models.User;
 import com.slavomirlobotka.dailyroutineforkids.repositories.ChildRepository;
+import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +50,7 @@ public class ChildServiceImpl implements ChildService {
     return child.getId();
   }
 
+  @Transactional
   @Override
   public DisplayChildDTO updateChild(Long id, UpdateChildDTO updateChildDTO)
       throws DailyRoutineNotFound {
@@ -71,6 +73,7 @@ public class ChildServiceImpl implements ChildService {
     return convertSingleChildToDto(child);
   }
 
+  @Transactional
   @Override
   public void removeChild(Long id) throws DailyRoutineNotFound {
     Child child =
@@ -80,6 +83,7 @@ public class ChildServiceImpl implements ChildService {
     childRepository.delete(child);
   }
 
+  @Transactional
   @Override
   public void removeAllChildren() throws DailyRoutineNotFound {
     User user = authenticationService.getCurrentParent();

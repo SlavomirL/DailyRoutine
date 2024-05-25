@@ -1,5 +1,6 @@
 package com.slavomirlobotka.dailyroutineforkids.services;
 
+import com.slavomirlobotka.dailyroutineforkids.dtos.UpdateScheduleTaskDTO;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.Schedule;
 import com.slavomirlobotka.dailyroutineforkids.models.ScheduleTask;
@@ -36,6 +37,33 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     ScheduleTask scheduleTask =
         ScheduleTask.builder().schedule(schedule.get()).task(task.get()).build();
+
+    scheduleTaskRepository.save(scheduleTask);
+
+    return scheduleTask;
+  }
+
+  @Transactional
+  @Override
+  public ScheduleTask updateTaskAttributes(Long taskId, UpdateScheduleTaskDTO updateScheduleTaskDTO)
+      throws DailyRoutineNotFound {
+    ScheduleTask scheduleTask =
+        scheduleTaskRepository
+            .findById(taskId)
+            .orElseThrow(
+                () ->
+                    new DailyRoutineNotFound(
+                        "No task with ID '" + taskId + "' belonging to the schedule was found."));
+
+    if (updateScheduleTaskDTO.getPoints() != null) {
+      scheduleTask.setPoints(updateScheduleTaskDTO.getPoints());
+    }
+    if (updateScheduleTaskDTO.getMustBeDone() != null) {
+      scheduleTask.setMustBeDone(updateScheduleTaskDTO.getMustBeDone());
+    }
+    if (updateScheduleTaskDTO.getIsFinished() != null) {
+      scheduleTask.setIsFinished(updateScheduleTaskDTO.getIsFinished());
+    }
 
     scheduleTaskRepository.save(scheduleTask);
 
