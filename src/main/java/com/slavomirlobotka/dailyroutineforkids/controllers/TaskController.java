@@ -27,19 +27,4 @@ public class TaskController {
 
     return ResponseEntity.ok("Task '" + taskName + "' created.");
   }
-
-  @PostMapping("/schedules/{scheduleId}/tasks/{taskId}")
-  public ResponseEntity<?> addTaskToSchedule(
-      @PathVariable Long scheduleId, @PathVariable Long taskId) throws DailyRoutineNotFound {
-    ScheduleTask added = taskService.addNewTask(scheduleId, taskId);
-
-    return ResponseEntity.ok(
-        "Task '"
-            + added.getTask().getTaskName()
-            + "' added to the schedule '"
-            + added.getSchedule().getScheduleName()
-            + "' of child '"
-            + added.getSchedule().getChild().getName()
-            + "'.");
-  }
 }
