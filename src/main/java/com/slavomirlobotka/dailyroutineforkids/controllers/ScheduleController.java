@@ -18,7 +18,7 @@ public class ScheduleController {
 
   private final ScheduleService scheduleService;
 
-  @PostMapping("/children/{childId}/schedule")
+  @PostMapping("/children/{childId}/schedules")
   public ResponseEntity<?> addScheduleToChild(
       @PathVariable Long childId, @RequestBody NewScheduleDTO newScheduleDTO)
       throws DailyRoutineNotFound, DailyRoutineBadRequest {
@@ -29,21 +29,21 @@ public class ScheduleController {
         "Schedule '" + newScheduleDTO.getScheduleName() + "' created for child with ID " + childId);
   }
 
-  @GetMapping("/children/{childId}/schedule")
+  @GetMapping("/children/{childId}/schedules")
   public ResponseEntity<?> checkChildSchedule(@PathVariable Long childId)
       throws DailyRoutineNotFound {
 
     return ResponseEntity.ok(scheduleService.displayChildSchedules(childId));
   }
 
-  @GetMapping("/children/{childId}/schedule/{scheduleName}")
+  @GetMapping("/children/{childId}/schedules/{scheduleName}")
   public ResponseEntity<?> getOneChildSchedule(
       @PathVariable Long childId, @PathVariable String scheduleName) throws DailyRoutineNotFound {
 
     return ResponseEntity.ok(scheduleService.displayScheduleByName(childId, scheduleName));
   }
 
-  @PatchMapping("/children/{childId}/schedule/{scheduleId}")
+  @PatchMapping("/children/{childId}/schedules/{scheduleId}")
   public ResponseEntity<?> updateSchedule(
       @PathVariable Long childId,
       @PathVariable Long scheduleId,
@@ -64,7 +64,7 @@ public class ScheduleController {
             + "'.");
   }
 
-  @PostMapping("/children/schedule")
+  @PostMapping("/schedules")
   public ResponseEntity<?> addSameSchedule(@RequestBody NewScheduleDTO newScheduleDTO)
       throws DailyRoutineNotFound, DailyRoutineBadRequest {
 
@@ -84,7 +84,7 @@ public class ScheduleController {
                 + "'. It has only been created for other children belonging to this parent.");
   }
 
-  @DeleteMapping("/children/{childId}/schedule/{scheduleId}")
+  @DeleteMapping("/children/{childId}/schedules/{scheduleId}")
   public ResponseEntity<?> deleteSchedule(@PathVariable Long childId, @PathVariable Long scheduleId)
       throws DailyRoutineNotFound {
     Child child = scheduleService.removeSchedule(childId, scheduleId);
@@ -97,7 +97,7 @@ public class ScheduleController {
             + "'.");
   }
 
-  @DeleteMapping("/children/{childId}/schedule")
+  @DeleteMapping("/children/{childId}/schedules")
   public ResponseEntity<?> deleteAllSchedulesPerChild(@PathVariable Long childId)
       throws DailyRoutineNotFound {
     Child child = scheduleService.removeAllSchedulesPerChild(childId);
@@ -106,7 +106,7 @@ public class ScheduleController {
         "All schedules have been removed from the list for child '" + child.getName() + "'.");
   }
 
-  @DeleteMapping("/children/schedule")
+  @DeleteMapping("/schedules")
   public ResponseEntity<?> deleteAllSchedules() throws DailyRoutineNotFound {
     scheduleService.removeAllSchedules();
 
