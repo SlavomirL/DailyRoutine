@@ -70,6 +70,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     return scheduleTask;
   }
 
+  @Transactional
   @Override
   public ScheduleTask removeScheduleTask(Long taskId) throws DailyRoutineNotFound {
     ScheduleTask scheduleTask =
