@@ -69,4 +69,19 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     return scheduleTask;
   }
+
+  @Transactional
+  @Override
+  public ScheduleTask removeScheduleTask(Long taskId) throws DailyRoutineNotFound {
+    ScheduleTask scheduleTask =
+        scheduleTaskRepository
+            .findById(taskId)
+            .orElseThrow(
+                () ->
+                    new DailyRoutineNotFound(
+                        "No task with ID '" + taskId + "' belonging to the schedule was found."));
+    scheduleTaskRepository.delete(scheduleTask);
+
+    return scheduleTask;
+  }
 }

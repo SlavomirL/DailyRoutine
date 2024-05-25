@@ -6,10 +6,7 @@ import com.slavomirlobotka.dailyroutineforkids.models.ScheduleTask;
 import com.slavomirlobotka.dailyroutineforkids.services.ScheduleTaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,7 +15,7 @@ public class ScheduleTaskController {
   private final ScheduleTaskService scheduleTaskService;
 
   @PatchMapping("/schedule-tasks/{sTaskId}")
-  public ResponseEntity<?> modifyTaskPoints(
+  public ResponseEntity<?> modifyScheduleTask(
       @PathVariable Long sTaskId, @RequestBody UpdateScheduleTaskDTO updateSTask)
       throws DailyRoutineNotFound {
 
@@ -31,6 +28,22 @@ public class ScheduleTaskController {
             + sTask.getMustBeDone()
             + "'. Is finished: '"
             + sTask.getIsFinished()
+            + "'.");
+  }
+
+  @DeleteMapping("/schedule-tasks/{sTaskId}")
+  public ResponseEntity<?> removeScheduleTask(@PathVariable Long sTaskId)
+      throws DailyRoutineNotFound {
+
+    ScheduleTask sTask = scheduleTaskService.removeScheduleTask(sTaskId);
+
+    return ResponseEntity.ok(
+        "Task '"
+            + sTask.getTask().getTaskName()
+            + "' deleted successfully from the schedule '"
+            + sTask.getSchedule().getScheduleName()
+            + "' of child '"
+            + sTask.getSchedule().getChild().getName()
             + "'.");
   }
 }
