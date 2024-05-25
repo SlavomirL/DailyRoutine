@@ -21,6 +21,8 @@ public class Task {
 
   private String description;
 
+  @NotNull private Boolean custom;
+
   @JsonIgnore
   @OneToMany(mappedBy = "task")
   private List<ScheduleTask> scheduleTasks;

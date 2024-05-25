@@ -33,6 +33,7 @@ public class TaskInitializer implements CommandLineRunner {
       Task task = new Task();
       task.setTaskName(taskName);
       task.setDescription(description);
+      task.setCustom(false);
       taskRepository.save(task);
     }
   }
