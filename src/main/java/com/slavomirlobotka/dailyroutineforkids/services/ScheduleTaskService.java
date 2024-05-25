@@ -10,4 +10,6 @@ public interface ScheduleTaskService {
 
   ScheduleTask updateTaskAttributes(Long taskId, UpdateScheduleTaskDTO updateScheduleTaskDTO)
       throws DailyRoutineNotFound;
+
+  ScheduleTask removeScheduleTask(Long taskId) throws DailyRoutineNotFound;
 }
