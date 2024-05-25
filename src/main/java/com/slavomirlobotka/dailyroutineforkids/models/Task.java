@@ -1,5 +1,6 @@
 package com.slavomirlobotka.dailyroutineforkids.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
@@ -20,6 +21,7 @@ public class Task {
 
   private String description;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "task")
   private List<ScheduleTask> scheduleTasks;
 }

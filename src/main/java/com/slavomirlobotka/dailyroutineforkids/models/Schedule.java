@@ -1,5 +1,6 @@
 package com.slavomirlobotka.dailyroutineforkids.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.slavomirlobotka.dailyroutineforkids.enums.DayOfWeek;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -35,8 +36,9 @@ public class Schedule {
 
   @NotNull private Integer pointsToFinish;
 
-  @ManyToOne private Child child;
+  @JsonIgnore @NotNull @ManyToOne private Child child;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
   private List<ScheduleTask> scheduleTasks;
 

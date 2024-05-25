@@ -61,10 +61,5 @@ public class TaskServiceImpl implements TaskService {
     scheduleTaskRepository.save(scheduleTask);
 
     return scheduleTask;
-
-    // to do:
-    /*
-     * create list of tasks so one task has only one line in database
-     * fix inifinite display of children*/
   }
 }

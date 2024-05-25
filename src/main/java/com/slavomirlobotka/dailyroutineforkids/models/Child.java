@@ -28,6 +28,7 @@ public class Child {
 
   @JsonIgnore @ManyToOne private User user;
 
+  @JsonIgnore
   @OneToMany(mappedBy = "child", cascade = CascadeType.ALL)
   private List<Schedule> schedules;
 }
