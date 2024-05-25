@@ -117,6 +117,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         .orElseThrow(() -> new DailyRoutineNotFound("Child with id '" + childId + "' not found."));
   }
 
+  @Transactional
   @Override
   public Schedule modifySchedule(Long childId, Long scheduleId, NewScheduleDTO scheduleData)
       throws DailyRoutineNotFound {
@@ -143,6 +144,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     return scheduleRepository.save(schedule);
   }
 
+  @Transactional
   @Override
   public List<String> addSameScheduleToAll(NewScheduleDTO newScheduleDTO)
       throws DailyRoutineNotFound, DailyRoutineBadRequest {
@@ -183,6 +185,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     return childrenWithExistingSchedule;
   }
 
+  @Transactional
   @Override
   public Child removeSchedule(Long childId, Long scheduleId) throws DailyRoutineNotFound {
     Child child = retreiveChild(childId);
@@ -202,8 +205,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     return child;
   }
 
-  @Override
   @Transactional
+  @Override
   public Child removeAllSchedulesPerChild(Long childId) throws DailyRoutineNotFound {
     Child child = retreiveChild(childId);
 
@@ -216,8 +219,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     return child;
   }
 
-  @Override
   @Transactional
+  @Override
   public void removeAllSchedules() throws DailyRoutineNotFound {
     User user = authenticationService.getCurrentParent();
     List<Child> children = childRepository.findAllByUser(user);
