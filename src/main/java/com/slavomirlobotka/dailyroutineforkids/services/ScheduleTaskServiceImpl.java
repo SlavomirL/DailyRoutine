@@ -1,6 +1,7 @@
 package com.slavomirlobotka.dailyroutineforkids.services;
 
 import com.slavomirlobotka.dailyroutineforkids.dtos.UpdateScheduleTaskDTO;
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.Schedule;
 import com.slavomirlobotka.dailyroutineforkids.models.ScheduleTask;
@@ -24,9 +25,9 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
   @Transactional
   @Override
   public ScheduleTask addNewTask(Long scheduleId, Long taskId) throws DailyRoutineNotFound {
-    Optional<Schedule> schedule = scheduleRepository.findById(scheduleId);
+    Optional<Schedule> scheduleOpt = scheduleRepository.findById(scheduleId);
 
-    if (schedule.isEmpty()) {
+    if (scheduleOpt.isEmpty()) {
       throw new DailyRoutineNotFound("Schedule with id '" + scheduleId + "' not found.");
     }
 
@@ -36,9 +37,13 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     }
 
     ScheduleTask scheduleTask =
-        ScheduleTask.builder().schedule(schedule.get()).task(task.get()).build();
+        ScheduleTask.builder().schedule(scheduleOpt.get()).task(task.get()).build();
 
     scheduleTaskRepository.save(scheduleTask);
+
+    Schedule schedule = scheduleRepository.findScheduleByScheduleTaskId(scheduleTask.getId());
+    schedule.setMaxPoints(schedule.getMaxPoints() + scheduleTask.getPoints());
+    scheduleRepository.save(schedule);
 
     return scheduleTask;
   }
@@ -46,17 +51,26 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
   @Transactional
   @Override
   public ScheduleTask updateTaskAttributes(Long taskId, UpdateScheduleTaskDTO updateScheduleTaskDTO)
-      throws DailyRoutineNotFound {
+      throws DailyRoutineNotFound, DailyRoutineBadRequest {
     ScheduleTask scheduleTask =
         scheduleTaskRepository
             .findById(taskId)
             .orElseThrow(
                 () ->
                     new DailyRoutineNotFound(
-                        "No task with ID '" + taskId + "' belonging to the schedule was found."));
+                        "No scheduleTask with ID '" + taskId + "' was found."));
 
+    Schedule schedule = scheduleRepository.findScheduleByScheduleTaskId(scheduleTask.getId());
     if (updateScheduleTaskDTO.getPoints() != null) {
-      scheduleTask.setPoints(updateScheduleTaskDTO.getPoints());
+      int previousPoints = scheduleTask.getPoints();
+      int newPoints = updateScheduleTaskDTO.getPoints();
+      if (newPoints < 0) {
+        throw new DailyRoutineBadRequest(
+            "Points assigned to task must be equal or greater than 0.");
+      }
+      scheduleTask.setPoints(newPoints);
+      schedule.setMaxPoints(schedule.getMaxPoints() - previousPoints + newPoints);
+      scheduleRepository.save(schedule);
     }
     if (updateScheduleTaskDTO.getMustBeDone() != null) {
       scheduleTask.setMustBeDone(updateScheduleTaskDTO.getMustBeDone());
@@ -80,7 +94,12 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                 () ->
                     new DailyRoutineNotFound(
                         "No task with ID '" + taskId + "' belonging to the schedule was found."));
+
+    Schedule schedule = scheduleRepository.findScheduleByScheduleTaskId(scheduleTask.getId());
+    schedule.setMaxPoints(schedule.getMaxPoints() - scheduleTask.getPoints());
+
     scheduleTaskRepository.delete(scheduleTask);
+    scheduleRepository.save(schedule);
 
     return scheduleTask;
   }

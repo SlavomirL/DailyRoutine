@@ -5,9 +5,7 @@ import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.Child;
 import com.slavomirlobotka.dailyroutineforkids.models.Schedule;
-import com.slavomirlobotka.dailyroutineforkids.models.ScheduleTask;
 import com.slavomirlobotka.dailyroutineforkids.services.ScheduleService;
-import com.slavomirlobotka.dailyroutineforkids.services.ScheduleTaskService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatusCode;
@@ -19,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 public class ScheduleController {
 
   private final ScheduleService scheduleService;
-  private final ScheduleTaskService scheduleTaskService;
 
   @PostMapping("/children/{childId}/schedules")
   public ResponseEntity<?> addScheduleToChild(
@@ -114,20 +111,5 @@ public class ScheduleController {
     scheduleService.removeAllSchedules();
 
     return ResponseEntity.ok("All schedules have been removed from the list for all children.");
-  }
-
-  @PostMapping("/schedules/{scheduleId}/tasks/{taskId}")
-  public ResponseEntity<?> addTaskToSchedule(
-      @PathVariable Long scheduleId, @PathVariable Long taskId) throws DailyRoutineNotFound {
-    ScheduleTask added = scheduleTaskService.addNewTask(scheduleId, taskId);
-
-    return ResponseEntity.ok(
-        "Task '"
-            + added.getTask().getTaskName()
-            + "' added to the schedule '"
-            + added.getSchedule().getScheduleName()
-            + "' of child '"
-            + added.getSchedule().getChild().getName()
-            + "'.");
   }
 }
