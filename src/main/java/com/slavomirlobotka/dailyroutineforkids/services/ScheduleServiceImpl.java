@@ -135,9 +135,6 @@ public class ScheduleServiceImpl implements ScheduleService {
     if (scheduleData.getWeekDays() != null) {
       schedule.setWeekDays(scheduleData.getWeekDays());
     }
-    //    if (scheduleData.getTasks() != null) {
-    //      schedule.setTasks(scheduleData.getTasks());
-    //    }
     if (scheduleData.getPointsToFinish() != null) {
       schedule.setPointsToFinish(scheduleData.getPointsToFinish());
     }
