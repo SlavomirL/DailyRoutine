@@ -3,6 +3,7 @@ package com.slavomirlobotka.dailyroutineforkids.services;
 import com.slavomirlobotka.dailyroutineforkids.dtos.NewScheduleDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.ScheduleListDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.ScheduleResponseDTO;
+import com.slavomirlobotka.dailyroutineforkids.dtos.UpdateScheduleDTO;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.Child;
@@ -41,7 +42,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             .child(child)
             .scheduleName(newScheduleDTO.getScheduleName())
             .weekDays(newScheduleDTO.getWeekDays())
-            .pointsToFinish(newScheduleDTO.getPointsToFinish())
+            .pointsToFinish(0)
             .build();
 
     scheduleRepository.save(schedule);
@@ -119,8 +120,8 @@ public class ScheduleServiceImpl implements ScheduleService {
 
   @Transactional
   @Override
-  public Schedule modifySchedule(Long childId, Long scheduleId, NewScheduleDTO scheduleData)
-      throws DailyRoutineNotFound {
+  public Schedule modifySchedule(Long childId, Long scheduleId, UpdateScheduleDTO scheduleData)
+      throws DailyRoutineNotFound, DailyRoutineBadRequest {
     Child child = retreiveChild(childId);
 
     Schedule schedule = scheduleRepository.findByChildIdAndId(childId, scheduleId);
@@ -136,6 +137,13 @@ public class ScheduleServiceImpl implements ScheduleService {
       schedule.setWeekDays(scheduleData.getWeekDays());
     }
     if (scheduleData.getPointsToFinish() != null) {
+      if (scheduleData.getPointsToFinish() > schedule.getMaxPoints()) {
+        throw new DailyRoutineBadRequest(
+            "Points to finish the schedule cannot exceed the sum of points of its tasks.");
+      }
+      if (scheduleData.getPointsToFinish() < 0) {
+        throw new DailyRoutineBadRequest("Points to finish the schedule must be greater than 0.");
+      }
       schedule.setPointsToFinish(scheduleData.getPointsToFinish());
     }
     return scheduleRepository.save(schedule);
@@ -161,7 +169,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .child(ch)
                 .scheduleName(newScheduleDTO.getScheduleName())
                 .weekDays(newScheduleDTO.getWeekDays())
-                .pointsToFinish(newScheduleDTO.getPointsToFinish())
+                .pointsToFinish(0)
                 .build();
 
         scheduleRepository.save(schedule);

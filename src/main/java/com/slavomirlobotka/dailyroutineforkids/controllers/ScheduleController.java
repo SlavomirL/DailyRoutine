@@ -1,6 +1,7 @@
 package com.slavomirlobotka.dailyroutineforkids.controllers;
 
 import com.slavomirlobotka.dailyroutineforkids.dtos.NewScheduleDTO;
+import com.slavomirlobotka.dailyroutineforkids.dtos.UpdateScheduleDTO;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.Child;
@@ -47,8 +48,8 @@ public class ScheduleController {
   public ResponseEntity<?> updateSchedule(
       @PathVariable Long childId,
       @PathVariable Long scheduleId,
-      @RequestBody(required = false) NewScheduleDTO scheduleData)
-      throws DailyRoutineNotFound {
+      @RequestBody(required = false) UpdateScheduleDTO scheduleData)
+      throws DailyRoutineNotFound, DailyRoutineBadRequest {
 
     Schedule schedule = scheduleService.modifySchedule(childId, scheduleId, scheduleData);
 

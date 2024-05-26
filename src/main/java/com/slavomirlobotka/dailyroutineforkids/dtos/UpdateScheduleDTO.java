@@ -6,8 +6,9 @@ import java.util.Set;
 import lombok.Data;
 
 @Data
-public class NewScheduleDTO {
+public class UpdateScheduleDTO {
 
   private String scheduleName;
   private Set<DayOfWeek> weekDays = new HashSet<>();
+  private Integer pointsToFinish;
 }

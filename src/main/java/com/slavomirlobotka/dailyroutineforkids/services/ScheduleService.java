@@ -3,6 +3,7 @@ package com.slavomirlobotka.dailyroutineforkids.services;
 import com.slavomirlobotka.dailyroutineforkids.dtos.NewScheduleDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.ScheduleListDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.ScheduleResponseDTO;
+import com.slavomirlobotka.dailyroutineforkids.dtos.UpdateScheduleDTO;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.Child;
@@ -20,8 +21,8 @@ public interface ScheduleService {
   ScheduleResponseDTO displayScheduleByName(Long childId, String scheduleName)
       throws DailyRoutineNotFound;
 
-  Schedule modifySchedule(Long childId, Long scheduleId, NewScheduleDTO scheduleData)
-      throws DailyRoutineNotFound;
+  Schedule modifySchedule(Long childId, Long scheduleId, UpdateScheduleDTO scheduleData)
+      throws DailyRoutineNotFound, DailyRoutineBadRequest;
 
   List<String> addSameScheduleToAll(NewScheduleDTO newScheduleDTO)
       throws DailyRoutineNotFound, DailyRoutineBadRequest;
