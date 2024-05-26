@@ -11,6 +11,7 @@ import com.slavomirlobotka.dailyroutineforkids.models.Schedule;
 import com.slavomirlobotka.dailyroutineforkids.models.User;
 import com.slavomirlobotka.dailyroutineforkids.repositories.ChildRepository;
 import com.slavomirlobotka.dailyroutineforkids.repositories.ScheduleRepository;
+import com.slavomirlobotka.dailyroutineforkids.repositories.ScheduleTaskRepository;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
   private final ChildRepository childRepository;
   private final ScheduleRepository scheduleRepository;
+  private final ScheduleTaskRepository scheduleTaskRepository;
   private final AuthenticationService authenticationService;
 
   @Override
@@ -42,7 +44,6 @@ public class ScheduleServiceImpl implements ScheduleService {
             .child(child)
             .scheduleName(newScheduleDTO.getScheduleName())
             .weekDays(newScheduleDTO.getWeekDays())
-            .pointsToFinish(0)
             .build();
 
     scheduleRepository.save(schedule);
@@ -104,6 +105,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             .isFinished(s.getIsFinished())
             .maxPoints(s.getMaxPoints())
             .pointsToFinish(s.getPointsToFinish())
+            .currentPoints(s.getCurrentPoints())
             .build();
       }
     }
@@ -169,7 +171,6 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .child(ch)
                 .scheduleName(newScheduleDTO.getScheduleName())
                 .weekDays(newScheduleDTO.getWeekDays())
-                .pointsToFinish(0)
                 .build();
 
         scheduleRepository.save(schedule);
@@ -219,6 +220,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     if (schedules == null || schedules.isEmpty()) {
       throw new DailyRoutineNotFound("No schedules found for child '" + child.getName() + "'.");
     }
+    scheduleTaskRepository.deleteByChildId(childId);
     scheduleRepository.deleteAllByChildId(childId);
 
     return child;
@@ -243,7 +245,8 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     if (schedulesFound) {
-      scheduleRepository.deleteAllByUserId(user.getId());
+      scheduleTaskRepository.deleteByUserId(user.getId());
+      scheduleRepository.deleteByUserId(user.getId());
     } else {
       throw new DailyRoutineNotFound(
           "No schedules were found for children of parent '" + user.getFirstName() + "'.");

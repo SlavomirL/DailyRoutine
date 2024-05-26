@@ -23,6 +23,7 @@ public class ScheduleResponseDTO {
   private Set<DayOfWeek> weekDays;
   private Integer maxPoints;
   private Integer pointsToFinish;
+  private Integer currentPoints;
   private Boolean isFinished;
   private List<ScheduleTask> tasks;
 }
