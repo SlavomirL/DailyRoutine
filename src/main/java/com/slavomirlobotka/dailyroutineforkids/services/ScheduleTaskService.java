@@ -13,4 +13,7 @@ public interface ScheduleTaskService {
       throws DailyRoutineNotFound, DailyRoutineBadRequest;
 
   ScheduleTask removeScheduleTask(Long taskId) throws DailyRoutineNotFound;
+
+  ScheduleTask updateTaskIsFinished(Long sTaskId, Boolean isFinished)
+      throws DailyRoutineNotFound, DailyRoutineBadRequest;
 }

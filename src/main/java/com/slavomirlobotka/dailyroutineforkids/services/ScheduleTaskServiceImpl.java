@@ -50,15 +50,10 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
   @Transactional
   @Override
-  public ScheduleTask updateTaskAttributes(Long taskId, UpdateScheduleTaskDTO updateScheduleTaskDTO)
+  public ScheduleTask updateTaskAttributes(
+      Long sTaskId, UpdateScheduleTaskDTO updateScheduleTaskDTO)
       throws DailyRoutineNotFound, DailyRoutineBadRequest {
-    ScheduleTask scheduleTask =
-        scheduleTaskRepository
-            .findById(taskId)
-            .orElseThrow(
-                () ->
-                    new DailyRoutineNotFound(
-                        "No scheduleTask with ID '" + taskId + "' was found."));
+    ScheduleTask scheduleTask = retreiveScheduleTask(sTaskId);
 
     Schedule schedule = scheduleRepository.findScheduleByScheduleTaskId(scheduleTask.getId());
     if (updateScheduleTaskDTO.getPoints() != null) {
@@ -75,9 +70,6 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     if (updateScheduleTaskDTO.getMustBeDone() != null) {
       scheduleTask.setMustBeDone(updateScheduleTaskDTO.getMustBeDone());
     }
-    if (updateScheduleTaskDTO.getIsFinished() != null) {
-      scheduleTask.setIsFinished(updateScheduleTaskDTO.getIsFinished());
-    }
 
     scheduleTaskRepository.save(scheduleTask);
 
@@ -86,20 +78,60 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
   @Transactional
   @Override
-  public ScheduleTask removeScheduleTask(Long taskId) throws DailyRoutineNotFound {
-    ScheduleTask scheduleTask =
-        scheduleTaskRepository
-            .findById(taskId)
-            .orElseThrow(
-                () ->
-                    new DailyRoutineNotFound(
-                        "No task with ID '" + taskId + "' belonging to the schedule was found."));
+  public ScheduleTask updateTaskIsFinished(Long sTaskId, Boolean isFinished)
+      throws DailyRoutineNotFound, DailyRoutineBadRequest {
+    ScheduleTask scheduleTask = retreiveScheduleTask(sTaskId);
+
+    if (scheduleTask.getIsFinished() && isFinished) {
+      throw new DailyRoutineBadRequest("This scheduleTask had already been finished previously.");
+    }
+
+    if (!scheduleTask.getIsFinished() && !isFinished) {
+      throw new DailyRoutineBadRequest("This scheduleTask is already waiting for completion.");
+    }
+
+    Schedule schedule = scheduleRepository.findScheduleByScheduleTaskId(scheduleTask.getId());
+
+    scheduleTask.setIsFinished(isFinished);
+    if (isFinished) {
+      schedule.setCurrentPoints(schedule.getCurrentPoints() + scheduleTask.getPoints());
+      if (schedule.getCurrentPoints() >= schedule.getPointsToFinish()) {
+        schedule.setIsFinished(isFinished);
+      }
+    } else {
+      schedule.setCurrentPoints(schedule.getCurrentPoints() - scheduleTask.getPoints());
+      if (schedule.getCurrentPoints() < schedule.getPointsToFinish()) {
+        schedule.setIsFinished(isFinished);
+      }
+    }
+
+    scheduleTaskRepository.save(scheduleTask);
+    scheduleRepository.save(schedule);
+    return scheduleTask;
+  }
+
+  @Transactional
+  @Override
+  public ScheduleTask removeScheduleTask(Long sTaskId) throws DailyRoutineNotFound {
+    ScheduleTask scheduleTask = retreiveScheduleTask(sTaskId);
 
     Schedule schedule = scheduleRepository.findScheduleByScheduleTaskId(scheduleTask.getId());
     schedule.setMaxPoints(schedule.getMaxPoints() - scheduleTask.getPoints());
 
     scheduleTaskRepository.delete(scheduleTask);
     scheduleRepository.save(schedule);
+
+    return scheduleTask;
+  }
+
+  private ScheduleTask retreiveScheduleTask(Long sTaskId) throws DailyRoutineNotFound {
+    ScheduleTask scheduleTask =
+        scheduleTaskRepository
+            .findById(sTaskId)
+            .orElseThrow(
+                () ->
+                    new DailyRoutineNotFound(
+                        "No scheduleTask with ID '" + sTaskId + "' was found."));
 
     return scheduleTask;
   }
