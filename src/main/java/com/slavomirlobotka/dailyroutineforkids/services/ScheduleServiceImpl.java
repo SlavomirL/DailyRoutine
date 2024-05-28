@@ -146,7 +146,9 @@ public class ScheduleServiceImpl implements ScheduleService {
       if (scheduleData.getPointsToFinish() < 0) {
         throw new DailyRoutineBadRequest("Points to finish the schedule must be greater than 0.");
       }
+
       schedule.setPointsToFinish(scheduleData.getPointsToFinish());
+      schedule.setIsFinished(schedule.getCurrentPoints() >= scheduleData.getPointsToFinish());
     }
     return scheduleRepository.save(schedule);
   }

@@ -43,6 +43,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     Schedule schedule = scheduleRepository.findScheduleByScheduleTaskId(scheduleTask.getId());
     schedule.setMaxPoints(schedule.getMaxPoints() + scheduleTask.getPoints());
+    schedule.setPointsToFinish(schedule.getPointsToFinish() + scheduleTask.getPoints());
     scheduleRepository.save(schedule);
 
     return scheduleTask;
@@ -65,6 +66,9 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
       }
       scheduleTask.setPoints(newPoints);
       schedule.setMaxPoints(schedule.getMaxPoints() - previousPoints + newPoints);
+      if(schedule.getPointsToFinish() > schedule.getMaxPoints()) {
+        schedule.setPointsToFinish(schedule.getMaxPoints());
+      }
       scheduleRepository.save(schedule);
     }
     if (updateScheduleTaskDTO.getMustBeDone() != null) {
@@ -117,6 +121,16 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     Schedule schedule = scheduleRepository.findScheduleByScheduleTaskId(scheduleTask.getId());
     schedule.setMaxPoints(schedule.getMaxPoints() - scheduleTask.getPoints());
+
+    if(schedule.getPointsToFinish() > schedule.getMaxPoints()) {
+      schedule.setPointsToFinish(schedule.getMaxPoints());
+    }
+
+    if(scheduleTask.getIsFinished()) {
+      schedule.setCurrentPoints(schedule.getCurrentPoints() - scheduleTask.getPoints());
+    }
+
+      schedule.setIsFinished(schedule.getCurrentPoints() >= schedule.getPointsToFinish());
 
     scheduleTaskRepository.delete(scheduleTask);
     scheduleRepository.save(schedule);

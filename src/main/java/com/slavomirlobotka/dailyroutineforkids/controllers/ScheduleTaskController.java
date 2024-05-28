@@ -42,8 +42,6 @@ public class ScheduleTaskController {
             + sTask.getPoints()
             + "'. Has to be done: '"
             + sTask.getMustBeDone()
-            + "'. Is finished: '"
-            + sTask.getIsFinished()
             + "'.");
   }
 
