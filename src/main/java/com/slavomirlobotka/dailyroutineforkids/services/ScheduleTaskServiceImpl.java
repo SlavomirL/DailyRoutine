@@ -11,6 +11,7 @@ import com.slavomirlobotka.dailyroutineforkids.repositories.ScheduleTaskReposito
 import com.slavomirlobotka.dailyroutineforkids.repositories.TaskRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,6 +45,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     Schedule schedule = scheduleRepository.findScheduleByScheduleTaskId(scheduleTask.getId());
     schedule.setMaxPoints(schedule.getMaxPoints() + scheduleTask.getPoints());
+    schedule.setIsFinished(checkMustBeDone(schedule));
 
     scheduleRepository.save(schedule);
 
@@ -69,6 +71,9 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
       schedule.setMaxPoints(schedule.getMaxPoints() - previousPoints + newPoints);
       if (schedule.getPointsToFinish() > schedule.getMaxPoints()) {
         schedule.setPointsToFinish(schedule.getMaxPoints());
+      }
+      if (scheduleTask.getIsFinished()) {
+        schedule.setCurrentPoints(schedule.getCurrentPoints() - previousPoints + newPoints);
       }
     }
     if (updateScheduleTaskDTO.getMustBeDone() != null) {
@@ -123,6 +128,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
   @Transactional
   @Override
   public ScheduleTask removeScheduleTask(Long sTaskId) throws DailyRoutineNotFound {
+    System.out.println("this was invoked as well");
     ScheduleTask scheduleTask = retreiveScheduleTask(sTaskId);
 
     Schedule schedule = scheduleRepository.findScheduleByScheduleTaskId(scheduleTask.getId());
@@ -136,24 +142,18 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
       schedule.setCurrentPoints(schedule.getCurrentPoints() - scheduleTask.getPoints());
     }
 
-    schedule.setIsFinished(checkMustBeDone(schedule) && checkPoints(schedule));
-
     scheduleTaskRepository.delete(scheduleTask);
+    schedule.setIsFinished(checkMustBeDone(schedule) && checkPoints(schedule));
     scheduleRepository.save(schedule);
 
     return scheduleTask;
   }
 
   private ScheduleTask retreiveScheduleTask(Long sTaskId) throws DailyRoutineNotFound {
-    ScheduleTask scheduleTask =
-        scheduleTaskRepository
-            .findById(sTaskId)
-            .orElseThrow(
-                () ->
-                    new DailyRoutineNotFound(
-                        "No scheduleTask with ID '" + sTaskId + "' was found."));
-
-    return scheduleTask;
+    return scheduleTaskRepository
+        .findById(sTaskId)
+        .orElseThrow(
+            () -> new DailyRoutineNotFound("No scheduleTask with ID '" + sTaskId + "' was found."));
   }
 
   @Transactional
@@ -177,9 +177,9 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
   @Transactional
   @Override
   public void checkAfterTaskDelete(Long taskId) throws DailyRoutineNotFound {
-    List<ScheduleTask> schTasks = scheduleTaskRepository.findAllByTaskId(taskId);
-    for (ScheduleTask st : schTasks) {
-      removeScheduleTask(st.getId());
+    List<ScheduleTask> scheduleTasks = scheduleTaskRepository.findAllByTaskId(taskId);
+    for (ScheduleTask sT : scheduleTasks) {
+      removeScheduleTask(sT.getId());
     }
   }
 }
