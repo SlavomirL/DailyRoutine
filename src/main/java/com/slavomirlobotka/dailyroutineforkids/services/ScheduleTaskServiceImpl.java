@@ -10,6 +10,7 @@ import com.slavomirlobotka.dailyroutineforkids.repositories.ScheduleRepository;
 import com.slavomirlobotka.dailyroutineforkids.repositories.ScheduleTaskRepository;
 import com.slavomirlobotka.dailyroutineforkids.repositories.TaskRepository;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,7 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
 
     Schedule schedule = scheduleRepository.findScheduleByScheduleTaskId(scheduleTask.getId());
     schedule.setMaxPoints(schedule.getMaxPoints() + scheduleTask.getPoints());
-    schedule.setPointsToFinish(schedule.getPointsToFinish() + scheduleTask.getPoints());
+
     scheduleRepository.save(schedule);
 
     return scheduleTask;
@@ -66,15 +67,17 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
       }
       scheduleTask.setPoints(newPoints);
       schedule.setMaxPoints(schedule.getMaxPoints() - previousPoints + newPoints);
-      if(schedule.getPointsToFinish() > schedule.getMaxPoints()) {
+      if (schedule.getPointsToFinish() > schedule.getMaxPoints()) {
         schedule.setPointsToFinish(schedule.getMaxPoints());
       }
-      scheduleRepository.save(schedule);
     }
     if (updateScheduleTaskDTO.getMustBeDone() != null) {
       scheduleTask.setMustBeDone(updateScheduleTaskDTO.getMustBeDone());
     }
 
+    schedule.setIsFinished(checkMustBeDone(schedule) && checkPoints(schedule));
+
+    scheduleRepository.save(schedule);
     scheduleTaskRepository.save(scheduleTask);
 
     return scheduleTask;
@@ -100,12 +103,15 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     if (isFinished) {
       schedule.setCurrentPoints(schedule.getCurrentPoints() + scheduleTask.getPoints());
       if (schedule.getCurrentPoints() >= schedule.getPointsToFinish()) {
-        schedule.setIsFinished(isFinished);
+        if (checkMustBeDone(schedule)) {
+          schedule.setIsFinished(true);
+        }
       }
     } else {
       schedule.setCurrentPoints(schedule.getCurrentPoints() - scheduleTask.getPoints());
-      if (schedule.getCurrentPoints() < schedule.getPointsToFinish()) {
-        schedule.setIsFinished(isFinished);
+      if (schedule.getCurrentPoints() < schedule.getPointsToFinish()
+          || !checkMustBeDone(schedule)) {
+        schedule.setIsFinished(false);
       }
     }
 
@@ -122,15 +128,15 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
     Schedule schedule = scheduleRepository.findScheduleByScheduleTaskId(scheduleTask.getId());
     schedule.setMaxPoints(schedule.getMaxPoints() - scheduleTask.getPoints());
 
-    if(schedule.getPointsToFinish() > schedule.getMaxPoints()) {
+    if (schedule.getPointsToFinish() > schedule.getMaxPoints()) {
       schedule.setPointsToFinish(schedule.getMaxPoints());
     }
 
-    if(scheduleTask.getIsFinished()) {
+    if (scheduleTask.getIsFinished()) {
       schedule.setCurrentPoints(schedule.getCurrentPoints() - scheduleTask.getPoints());
     }
 
-      schedule.setIsFinished(schedule.getCurrentPoints() >= schedule.getPointsToFinish());
+    schedule.setIsFinished(checkMustBeDone(schedule) && checkPoints(schedule));
 
     scheduleTaskRepository.delete(scheduleTask);
     scheduleRepository.save(schedule);
@@ -148,5 +154,32 @@ public class ScheduleTaskServiceImpl implements ScheduleTaskService {
                         "No scheduleTask with ID '" + sTaskId + "' was found."));
 
     return scheduleTask;
+  }
+
+  @Transactional
+  @Override
+  public boolean checkMustBeDone(Schedule schedule) {
+    List<ScheduleTask> schTasks = scheduleTaskRepository.findAllBySchedule(schedule);
+    for (ScheduleTask st : schTasks) {
+      if (st.getMustBeDone() && !st.getIsFinished()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  @Transactional
+  @Override
+  public boolean checkPoints(Schedule schedule) {
+    return schedule.getCurrentPoints() >= schedule.getPointsToFinish();
+  }
+
+  @Transactional
+  @Override
+  public void checkAfterTaskDelete(Long taskId) throws DailyRoutineNotFound {
+    List<ScheduleTask> schTasks = scheduleTaskRepository.findAllByTaskId(taskId);
+    for (ScheduleTask st : schTasks) {
+      removeScheduleTask(st.getId());
+    }
   }
 }

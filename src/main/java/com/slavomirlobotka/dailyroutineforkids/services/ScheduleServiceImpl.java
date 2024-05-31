@@ -25,6 +25,7 @@ public class ScheduleServiceImpl implements ScheduleService {
   private final ChildRepository childRepository;
   private final ScheduleRepository scheduleRepository;
   private final ScheduleTaskRepository scheduleTaskRepository;
+  private final ScheduleTaskService scheduleTaskService;
   private final AuthenticationService authenticationService;
 
   @Override
@@ -148,7 +149,7 @@ public class ScheduleServiceImpl implements ScheduleService {
       }
 
       schedule.setPointsToFinish(scheduleData.getPointsToFinish());
-      schedule.setIsFinished(schedule.getCurrentPoints() >= scheduleData.getPointsToFinish());
+      schedule.setIsFinished(scheduleTaskService.checkPoints(schedule));
     }
     return scheduleRepository.save(schedule);
   }
