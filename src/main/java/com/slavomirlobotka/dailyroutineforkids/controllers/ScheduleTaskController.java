@@ -42,9 +42,16 @@ public class ScheduleTaskController {
             + sTask.getPoints()
             + "'. Has to be done: '"
             + sTask.getMustBeDone()
-            + "'. Is finished: '"
-            + sTask.getIsFinished()
             + "'.");
+  }
+
+  @PatchMapping("/schedule-tasks/{sTaskId}/is-finished")
+  public ResponseEntity<?> updateTaskIsFinished(
+      @PathVariable Long sTaskId, @RequestParam Boolean finished)
+      throws DailyRoutineNotFound, DailyRoutineBadRequest {
+    ScheduleTask sTask = scheduleTaskService.updateTaskIsFinished(sTaskId, finished);
+    return ResponseEntity.ok(
+        "Task finished status updated successfully. Is finished: '" + sTask.getIsFinished() + "'.");
   }
 
   @DeleteMapping("/schedule-tasks/{sTaskId}")

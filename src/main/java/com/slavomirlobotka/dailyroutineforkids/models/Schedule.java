@@ -36,6 +36,8 @@ public class Schedule {
 
   @NotNull private Integer pointsToFinish;
 
+  @NotNull private Integer currentPoints;
+
   @JsonIgnore @NotNull @ManyToOne private Child child;
 
   @JsonIgnore
@@ -43,13 +45,13 @@ public class Schedule {
   private List<ScheduleTask> scheduleTasks;
 
   @Builder
-  public Schedule(
-      String scheduleName, Child child, Set<DayOfWeek> weekDays, Integer pointsToFinish) {
+  public Schedule(String scheduleName, Child child, Set<DayOfWeek> weekDays) {
     this.scheduleName = scheduleName;
     this.child = child;
     this.weekDays = weekDays;
     this.isFinished = false;
     this.maxPoints = 0;
-    this.pointsToFinish = pointsToFinish;
+    this.pointsToFinish = 0;
+    this.currentPoints = 0;
   }
 }

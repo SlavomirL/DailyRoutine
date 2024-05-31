@@ -17,6 +17,7 @@ public class TaskServiceImpl implements TaskService {
 
   private final TaskRepository taskRepository;
   private final ScheduleTaskRepository scheduleTaskRepository;
+  private final ScheduleTaskService scheduleTaskService;
   private final AuthenticationService authenticationService;
 
   @Override
@@ -99,6 +100,7 @@ public class TaskServiceImpl implements TaskService {
       throw new DailyRoutineBadRequest(
           "Custom task with ID '" + taskId + "' belongs to different user and cannot be deleted.");
     }
+    scheduleTaskService.checkAfterTaskDelete(taskId);
     scheduleTaskRepository.deleteByTaskId(task.getId());
     taskRepository.delete(task);
 

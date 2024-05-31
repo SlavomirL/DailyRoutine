@@ -6,5 +6,4 @@ import lombok.Data;
 public class UpdateScheduleTaskDTO {
   private Integer points;
   private Boolean mustBeDone;
-  private Boolean isFinished;
 }

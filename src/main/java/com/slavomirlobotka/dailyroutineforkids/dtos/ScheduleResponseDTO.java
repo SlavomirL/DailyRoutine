@@ -21,8 +21,9 @@ public class ScheduleResponseDTO {
   private Long scheduleId;
   private String scheduleName;
   private Set<DayOfWeek> weekDays;
-  private List<ScheduleTask> tasks;
-  private Boolean isFinished;
   private Integer maxPoints;
   private Integer pointsToFinish;
+  private Integer currentPoints;
+  private Boolean isFinished;
+  private List<ScheduleTask> tasks;
 }
