@@ -1,7 +1,10 @@
 package com.slavomirlobotka.dailyroutineforkids.controllers;
 
+import com.slavomirlobotka.dailyroutineforkids.dtos.AuthenticationResponseDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.LoginRequestDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.RegisterRequestDTO;
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineForbidden;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineIO;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineUnauthorized;
 import com.slavomirlobotka.dailyroutineforkids.services.AuthenticationService;
@@ -18,7 +21,7 @@ public class AuthenticationController {
 
   @PostMapping("/users/register")
   public ResponseEntity<?> registerUser(@Valid @RequestBody RegisterRequestDTO registerRequestDTO)
-      throws DailyRoutineIO {
+      throws DailyRoutineIO, DailyRoutineForbidden {
     authenticationService.registerNewParent(registerRequestDTO);
 
     return ResponseEntity.accepted()
@@ -30,15 +33,9 @@ public class AuthenticationController {
 
   @PostMapping("/users/login")
   public ResponseEntity<?> userLogin(@RequestBody LoginRequestDTO loginRequestDTO)
-      throws DailyRoutineUnauthorized {
-    if (loginRequestDTO == null
-        || loginRequestDTO.getFirstName() == null
-        || loginRequestDTO.getPassword() == null
-        || loginRequestDTO.getEmail() == null) {
-
-      return ResponseEntity.badRequest().build();
-    }
-
-    return ResponseEntity.ok(authenticationService.authenticate(loginRequestDTO));
+      throws DailyRoutineUnauthorized, DailyRoutineBadRequest {
+    AuthenticationResponseDTO response = authenticationService.authenticate(loginRequestDTO);
+    String successMessage = response.getSuccessMessage();
+    return ResponseEntity.ok(successMessage);
   }
 }

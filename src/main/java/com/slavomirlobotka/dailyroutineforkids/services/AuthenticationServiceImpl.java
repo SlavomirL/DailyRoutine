@@ -8,6 +8,7 @@ import com.slavomirlobotka.dailyroutineforkids.email.EmailConfirmationToken;
 import com.slavomirlobotka.dailyroutineforkids.email.EmailConfirmationTokenRepository;
 import com.slavomirlobotka.dailyroutineforkids.email.EmailService;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineForbidden;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineIO;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineUnauthorized;
 import com.slavomirlobotka.dailyroutineforkids.models.User;
@@ -40,7 +41,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
   @Transactional
   @Override
-  public void registerNewParent(RegisterRequestDTO registerDto) throws DailyRoutineIO {
+  public void registerNewParent(RegisterRequestDTO registerDto)
+      throws DailyRoutineForbidden, DailyRoutineIO {
+    if (isEmailAlreadyUsed(registerDto.getEmail())) {
+      throw new DailyRoutineForbidden(
+          "This email address has already been used. Please, use different one.");
+    }
     User user =
         User.builder()
             .firstName(registerDto.getFirstName())
@@ -113,7 +119,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
   @Override
   public AuthenticationResponseDTO authenticate(LoginRequestDTO loginRequestDTO)
-      throws DailyRoutineUnauthorized {
+      throws DailyRoutineUnauthorized, DailyRoutineBadRequest {
+    if (loginRequestDTO == null
+        || (loginRequestDTO.getPassword() == null && loginRequestDTO.getEmail() == null)) {
+      throw new DailyRoutineBadRequest("Please, enter your login credentials.");
+    }
+    if (loginRequestDTO.getEmail() == null || loginRequestDTO.getEmail().isEmpty()) {
+      throw new DailyRoutineBadRequest(
+          "Please, enter also your email address that you used during registration.");
+    }
+    if (!userRepository.existsAllByEmail(loginRequestDTO.getEmail())) {
+      throw new DailyRoutineUnauthorized("Incorrect email address.");
+    }
+    if (loginRequestDTO.getPassword() == null || loginRequestDTO.getPassword().isEmpty()) {
+      throw new DailyRoutineBadRequest("Please, enter also your password.");
+    }
+
+    User user = userRepository.findByEmail(loginRequestDTO.getEmail());
+    if (!passwordEncoder.matches(loginRequestDTO.getPassword(), user.getPassword())) {
+      throw new DailyRoutineUnauthorized("Incorrect password.");
+    }
+
     if (isUserEnabled(loginRequestDTO.getEmail())) {
       Authentication authentication =
           authenticationManager.authenticate(
@@ -122,7 +148,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       SecurityContextHolder.getContext().setAuthentication(authentication);
       String jwtToken = jwtService.generateToken(authentication);
 
-      return AuthenticationResponseDTO.builder().token(jwtToken).build();
+      return AuthenticationResponseDTO.builder()
+          .name(authentication.getName())
+          .token(jwtToken)
+          .build();
     } else {
       throw new DailyRoutineUnauthorized("You have to verify your email first.");
     }
@@ -141,5 +170,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     String email = authentication.getName();
 
     return userRepository.findByEmail(email);
+  }
+
+  @Override
+  public boolean isEmailAlreadyUsed(String email) {
+    return userRepository.existsAllByEmail(email);
   }
 }
