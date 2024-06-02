@@ -26,6 +26,9 @@ public class TaskInitializer implements CommandLineRunner {
     initializeTask("Dishes", "Wash and dry dishes.");
     initializeTask("Trash", "Take out the trash.");
     initializeTask("Grocery", "Go and buy grocery.");
+    initializeTask("Dishwasher", "Fill or empty the dishwasher.");
+    initializeTask("Bed", "Make the bed.");
+
   }
 
   private void initializeTask(String taskName, String description) {
