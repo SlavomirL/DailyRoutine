@@ -8,6 +8,7 @@ import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.Child;
 import com.slavomirlobotka.dailyroutineforkids.models.Schedule;
+import com.slavomirlobotka.dailyroutineforkids.models.ScheduleTask;
 import com.slavomirlobotka.dailyroutineforkids.models.User;
 import com.slavomirlobotka.dailyroutineforkids.repositories.ChildRepository;
 import com.slavomirlobotka.dailyroutineforkids.repositories.ScheduleRepository;
@@ -254,5 +255,30 @@ public class ScheduleServiceImpl implements ScheduleService {
       throw new DailyRoutineNotFound(
           "No schedules were found for children of parent '" + user.getFirstName() + "'.");
     }
+  }
+
+  @Transactional
+  @Override
+  public Schedule resetSchedule(Long childId, Long scheduleId) throws DailyRoutineNotFound {
+    Child child = retreiveChild(childId);
+    Schedule schedule = scheduleRepository.findByChildIdAndId(childId, scheduleId);
+    if (schedule == null) {
+      throw new DailyRoutineNotFound(
+          "Schedule with ID '"
+              + scheduleId
+              + "' does not exist for child '"
+              + child.getName()
+              + "'.");
+    }
+    List<ScheduleTask> schTasks = scheduleTaskRepository.findAllBySchedule(schedule);
+    for (ScheduleTask st : schTasks) {
+      st.setIsFinished(false);
+    }
+    schedule.setCurrentPoints(0);
+    schedule.setIsFinished(false);
+    scheduleTaskRepository.saveAll(schTasks);
+    scheduleRepository.save(schedule);
+
+    return schedule;
   }
 }

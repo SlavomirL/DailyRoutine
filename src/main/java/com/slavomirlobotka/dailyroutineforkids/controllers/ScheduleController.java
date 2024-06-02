@@ -113,4 +113,13 @@ public class ScheduleController {
 
     return ResponseEntity.ok("All schedules have been removed from the list for all children.");
   }
+
+  @PatchMapping("/children/{childId}/schedules/{scheduleId}/reset")
+  public ResponseEntity<?> resetScheduleStatus(
+      @PathVariable Long childId, @PathVariable Long scheduleId) throws DailyRoutineNotFound {
+
+    Schedule schedule = scheduleService.resetSchedule(childId, scheduleId);
+
+    return ResponseEntity.ok("Schedule '" + schedule.getScheduleName() + "' is now reset.");
+  }
 }
