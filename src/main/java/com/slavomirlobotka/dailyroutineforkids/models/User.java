@@ -1,5 +1,6 @@
 package com.slavomirlobotka.dailyroutineforkids.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.slavomirlobotka.dailyroutineforkids.models.roles.RoleEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -41,6 +42,7 @@ public class User {
   private boolean enabled;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  @JsonManagedReference(value = "user-child")
   private List<Child> children;
 
   @Enumerated(EnumType.STRING)

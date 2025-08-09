@@ -4,6 +4,7 @@ import com.slavomirlobotka.dailyroutineforkids.dtos.DisplayChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.RegisterChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.UpdateChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineIllegalArgument;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.services.ChildService;
 import java.util.List;
@@ -20,7 +21,7 @@ public class ChildController {
   @PostMapping("/children/{name}")
   public ResponseEntity<?> addChild(
       @PathVariable String name, @RequestBody(required = false) RegisterChildDTO registerChildDto)
-      throws DailyRoutineBadRequest {
+      throws DailyRoutineBadRequest, DailyRoutineIllegalArgument {
     if (registerChildDto == null) {
       registerChildDto = new RegisterChildDTO();
     }
@@ -40,7 +41,7 @@ public class ChildController {
   @PatchMapping("/children/{id}")
   public ResponseEntity<?> updateChildData(
       @PathVariable Long id, @RequestBody(required = false) UpdateChildDTO updateChildDTO)
-      throws DailyRoutineNotFound {
+      throws DailyRoutineNotFound, DailyRoutineIllegalArgument {
     DisplayChildDTO child = childService.updateChild(id, updateChildDTO);
 
     return ResponseEntity.ok(child);

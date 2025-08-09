@@ -76,6 +76,18 @@ public class GlobalExceptionHandler {
         ex, HttpStatus.BAD_REQUEST, "Invalid request. Please check your input and try again.");
   }
 
+  @ExceptionHandler(DailyRoutineIllegalArgument.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponseDTO handleDailyRoutineIllegalArgument(DailyRoutineIllegalArgument ex) {
+    return new ErrorResponseDTO(
+            "400 BAD REQUEST",
+            ex.getMessage(),
+            formatDate(new Date())
+    );
+  }
+
+
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ResponseBody

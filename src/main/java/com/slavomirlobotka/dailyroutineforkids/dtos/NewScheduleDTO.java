@@ -10,4 +10,5 @@ public class NewScheduleDTO {
 
   private String scheduleName;
   private Set<DayOfWeek> weekDays = new HashSet<>();
+  private Integer pointsToFinish;
 }

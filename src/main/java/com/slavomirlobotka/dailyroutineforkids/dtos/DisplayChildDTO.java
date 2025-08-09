@@ -1,6 +1,8 @@
 package com.slavomirlobotka.dailyroutineforkids.dtos;
 
 import java.util.List;
+
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,4 +19,7 @@ public class DisplayChildDTO {
   private Integer age;
   private String gender;
   private List<ScheduleResponseDTO> schedules;
+
+  public DisplayChildDTO(Long id, @NotBlank(message = "Name is mandatory") String name) {
+  }
 }
