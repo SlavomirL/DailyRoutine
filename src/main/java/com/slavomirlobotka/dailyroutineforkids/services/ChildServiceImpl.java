@@ -5,6 +5,7 @@ import com.slavomirlobotka.dailyroutineforkids.dtos.RegisterChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.ScheduleResponseDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.UpdateChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
+import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineIllegalArgument;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
 import com.slavomirlobotka.dailyroutineforkids.models.Child;
 import com.slavomirlobotka.dailyroutineforkids.models.User;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.text.WordUtils;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -25,7 +27,7 @@ public class ChildServiceImpl implements ChildService {
 
   @Override
   public Long createChild(String childName, RegisterChildDTO registerChildDTO)
-      throws DailyRoutineBadRequest {
+      throws DailyRoutineBadRequest, DailyRoutineIllegalArgument {
     User user = authenticationService.getCurrentParent();
 
     if (childRepository.existsByUserIdAndName(user.getId(), childName)) {
@@ -36,11 +38,16 @@ public class ChildServiceImpl implements ChildService {
               + user.getFirstName()
               + "'.");
     }
+
+    if(!"girl".equalsIgnoreCase(registerChildDTO.getGender()) && !"boy".equalsIgnoreCase(registerChildDTO.getGender())) {
+      throw new DailyRoutineIllegalArgument("A gender must be either a Girl or a Boy");
+    }
+
     Child child =
         Child.builder()
             .name(childName)
             .age(registerChildDTO.getAge())
-            .gender(registerChildDTO.getGender())
+            .gender(WordUtils.capitalize(registerChildDTO.getGender().toLowerCase()))
             .user(user)
             .build();
 
@@ -53,20 +60,24 @@ public class ChildServiceImpl implements ChildService {
   @Transactional
   @Override
   public DisplayChildDTO updateChild(Long id, UpdateChildDTO updateChildDTO)
-      throws DailyRoutineNotFound {
+      throws DailyRoutineNotFound, DailyRoutineIllegalArgument {
     Child child =
         childRepository
             .findById(id)
             .orElseThrow(() -> new DailyRoutineNotFound("No child with ID '" + id + "' found."));
 
     if (updateChildDTO.getName() != null) {
-      child.setName(updateChildDTO.getName());
+        child.setName(updateChildDTO.getName());
     }
     if (updateChildDTO.getAge() != null) {
       child.setAge(updateChildDTO.getAge());
     }
     if (updateChildDTO.getGender() != null) {
-      child.setGender(updateChildDTO.getGender());
+      if(!"girl".equalsIgnoreCase(updateChildDTO.getGender()) && !"boy".equalsIgnoreCase(updateChildDTO.getGender())) {
+        throw new DailyRoutineIllegalArgument("A gender must be either a Girl or a Boy");
+      } else {
+        child.setGender(WordUtils.capitalize(updateChildDTO.getGender().toLowerCase()));
+      }
     }
     childRepository.save(child);
 
@@ -127,7 +138,7 @@ public class ChildServiceImpl implements ChildService {
         .id(child.getId())
         .name(child.getName())
         .age(child.getAge())
-        .gender(child.getGender())
+        .gender(String.valueOf(child.getGender()))
         .schedules(
             child.getSchedules().stream()
                 .map(

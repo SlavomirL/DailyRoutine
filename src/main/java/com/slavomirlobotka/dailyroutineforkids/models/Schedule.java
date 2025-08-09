@@ -1,5 +1,6 @@
 package com.slavomirlobotka.dailyroutineforkids.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.slavomirlobotka.dailyroutineforkids.enums.DayOfWeek;
 import jakarta.persistence.*;
@@ -38,7 +39,9 @@ public class Schedule {
 
   @NotNull private Integer currentPoints;
 
-  @JsonIgnore @NotNull @ManyToOne private Child child;
+//  @JsonIgnore
+  @JsonBackReference(value = "child-schedule")
+  @NotNull @ManyToOne private Child child;
 
   @JsonIgnore
   @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
@@ -50,8 +53,8 @@ public class Schedule {
     this.child = child;
     this.weekDays = weekDays;
     this.isFinished = false;
-    this.maxPoints = 0;
-    this.pointsToFinish = 0;
+    this.pointsToFinish = 10;
+    this.maxPoints = this.pointsToFinish;
     this.currentPoints = 0;
   }
 }

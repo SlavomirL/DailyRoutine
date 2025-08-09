@@ -20,14 +20,14 @@ public class TaskInitializer implements CommandLineRunner {
     initializeTask("Homework", "Do the school homework.");
     initializeTask("Toys", "Put toys to their designated place.");
     initializeTask("Room", "Tidy up children`s room.");
+    initializeTask("Bed", "Make the bed.");
     initializeTask("Laundry", "Put dirty clothes to the laundry basket.");
     initializeTask("Play", "Play with sibling.");
     initializeTask("Hoover", "Vacuum the designated rooms.");
     initializeTask("Dishes", "Wash and dry dishes.");
-    initializeTask("Trash", "Take out the trash.");
-    initializeTask("Grocery", "Go and buy grocery.");
     initializeTask("Dishwasher", "Fill or empty the dishwasher.");
-    initializeTask("Bed", "Make the bed.");
+    initializeTask("Trash", "Take out the trash.");
+    initializeTask("Grocery", "Go and buy groceries.");
 
   }
 

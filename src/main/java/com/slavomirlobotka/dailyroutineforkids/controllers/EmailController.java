@@ -30,7 +30,7 @@ public class EmailController {
 
     boolean isVerified = authenticationService.verifyUserCode(code, email);
     if (isVerified) {
-      return ResponseEntity.ok("Account successfully verified.");
+      return ResponseEntity.ok("Account successfully verified.\nYou can close this page now.");
     } else {
       throw new DailyRoutineBadRequest("Invalid code or email.");
     }

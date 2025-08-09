@@ -1,11 +1,13 @@
 package com.slavomirlobotka.dailyroutineforkids.services;
 
+import com.slavomirlobotka.dailyroutineforkids.dtos.DisplayChildDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.NewScheduleDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.ScheduleListDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.ScheduleResponseDTO;
 import com.slavomirlobotka.dailyroutineforkids.dtos.UpdateScheduleDTO;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineBadRequest;
 import com.slavomirlobotka.dailyroutineforkids.exceptions.DailyRoutineNotFound;
+//import com.slavomirlobotka.dailyroutineforkids.mappers.ChildMapper;
 import com.slavomirlobotka.dailyroutineforkids.models.Child;
 import com.slavomirlobotka.dailyroutineforkids.models.Schedule;
 import com.slavomirlobotka.dailyroutineforkids.models.ScheduleTask;
@@ -161,6 +163,7 @@ public class ScheduleServiceImpl implements ScheduleService {
       throws DailyRoutineNotFound, DailyRoutineBadRequest {
     User user = authenticationService.getCurrentParent();
     List<Child> children = childRepository.findAllByUser(user);
+//    List<DisplayChildDTO> childDTOs = ChildMapper.toDTOList(children);
     if (children == null || children.isEmpty()) {
       throw new DailyRoutineNotFound(
           "There are no children belonging to parent '" + user.getFirstName() + "'.");

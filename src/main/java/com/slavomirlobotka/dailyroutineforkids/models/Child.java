@@ -1,6 +1,8 @@
 package com.slavomirlobotka.dailyroutineforkids.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import java.util.List;
@@ -26,9 +28,12 @@ public class Child {
 
   private String gender;
 
-  @JsonIgnore @ManyToOne private User user;
+//  @JsonIgnore - vrat toto naspat ak sa ti nieco nebude zdat v zobrazeni
+  @ManyToOne @JsonBackReference(value = "user-child")
+  private User user;
 
-  @JsonIgnore
+//  @JsonIgnore
+@JsonManagedReference(value = "child-schedule")
   @OneToMany(mappedBy = "child", cascade = CascadeType.ALL)
   private List<Schedule> schedules;
 }
